@@ -1,0 +1,166 @@
+cmake_minimum_required(VERSION 3.4.1)
+project(ORB_SLAM3)
+
+set(ANDROID_ABI "arm64-v8a" CACHE STRING "")
+set(ANDROID_PLATFORM "android-19" CACHE STRING "")
+
+SET(CMAKE_BUILD_TYPE Release)
+
+
+MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
+
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall   -O3")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3")
+# set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
+# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
+
+# Check C++11 or C++0x support
+include(CheckCXXCompilerFlag)
+# CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+# CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+# if(COMPILER_SUPPORTS_CXX11)
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+#    add_definitions(-DCOMPILEDWITHC11)
+#    message(STATUS "Using flag -std=c++11.")
+# elseif(COMPILER_SUPPORTS_CXX0X)
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+#    add_definitions(-DCOMPILEDWITHC0X)
+#    message(STATUS "Using flag -std=c++0x.")
+# else()
+#    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+# endif()
+
+LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
+
+
+# set(OpenCV_DIR /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni)
+# find_package(OpenCV 3.0 QUIET)
+   # if(NOT OpenCV_FOUND)
+   #    message(FATAL_ERROR "OpenCV > 4.4 not found.")
+   # endif()
+
+# MESSAGE("OPENCV VERSION:")
+# MESSAGE(${OpenCV_VERSION})
+
+
+# 包含eigen
+# include_directories("/home/sophda/project/slamAR/orbsrc/ORB_SLAM2-master/Thirdparty/eigen/eigen-3.4.0")
+# include_directories("/home/sophda/project/slamAR/orbsrc/ORB_SLAM2-master/Thirdparty/eigen/eigen-3.4.0/arm_build")
+# include_directories("/home/sophda/project/slamAR/orbsrc/ORB_SLAM2-master/Thirdparty/eigen/eigen-3.4.0/arm_build/include")
+include_directories("/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0")
+include_directories("/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0/Eigen")
+include_directories("/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0/Eigen/src")
+# find_package(Eigen3 3.1.0 REQUIRED)
+# find_package(Pangolin REQUIRED)
+# find_package(realsense2)
+
+# set(boost_include_dir /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Boost-for-Android-master/boost_1_82_0/)
+# add_library(boost_LIB INTERFACE)
+
+include_directories(
+${PROJECT_SOURCE_DIR}
+${PROJECT_SOURCE_DIR}/include
+${PROJECT_SOURCE_DIR}/include/CameraModels
+${PROJECT_SOURCE_DIR}/Thirdparty/Sophus
+# ${EIGEN3_INCLUDE_DIR}
+# /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/openssl
+# Thirdparty/openssl/include
+# /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/ndk_25_boost_1.79.0/include
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/DBoW2
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/DUtils
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/g2o
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Boost-for-Android-master/boost_1_82_0
+
+)
+
+
+# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+
+
+
+include_directories(
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/include
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/include/CameraModels
+# opencv
+/home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include
+)
+link_directories(/home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/libs/arm64-v8a)
+link_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/arm64_build)
+link_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/armv8a_build)
+
+add_library(${PROJECT_NAME} SHARED
+src/System.cc
+src/Tracking.cc
+src/LocalMapping.cc
+src/LoopClosing.cc
+src/ORBextractor.cc
+src/ORBmatcher.cc
+# src/FrameDrawer.cc
+src/Converter.cc
+src/MapPoint.cc
+src/KeyFrame.cc
+src/Atlas.cc
+src/Map.cc
+# src/MapDrawer.cc
+src/Optimizer.cc
+src/Frame.cc
+src/KeyFrameDatabase.cc
+src/Sim3Solver.cc
+# src/Viewer.cc
+src/ImuTypes.cc
+src/G2oTypes.cc
+src/CameraModels/Pinhole.cpp
+src/CameraModels/KannalaBrandt8.cpp
+src/OptimizableTypes.cpp
+src/MLPnPsolver.cpp
+src/GeometricTools.cc
+src/TwoViewReconstruction.cc
+src/Config.cc
+src/Settings.cc
+
+# include/System.h
+# include/Tracking.h
+# include/LocalMapping.h
+# include/LoopClosing.h
+# include/ORBextractor.h
+# include/ORBmatcher.h
+# # include/FrameDrawer.h
+# include/Converter.h
+# include/MapPoint.h
+# include/KeyFrame.h
+# include/Atlas.h
+# include/Map.h
+# # include/MapDrawer.h
+# include/Optimizer.h
+# include/Frame.h
+# include/KeyFrameDatabase.h
+# include/Sim3Solver.h
+# # include/Viewer.h
+# include/ImuTypes.h
+# include/G2oTypes.h
+# include/CameraModels/GeometricCamera.h
+# include/CameraModels/Pinhole.h
+# include/CameraModels/KannalaBrandt8.h
+# include/OptimizableTypes.h
+# include/MLPnPsolver.h
+# include/GeometricTools.h
+# include/TwoViewReconstruction.h
+# include/SerializationUtils.h
+# include/Config.h
+# include/Settings.h
+
+)
+
+
+target_link_libraries(${PROJECT_NAME}
+# ${OpenCV_LIBS}
+libg2o.so
+libDBoW2.so
+libopencv_calib3d.so  libopencv_features2d.so  libopencv_imgcodecs.so  libopencv_objdetect.so  libopencv_stitching.so  libopencv_videoio.so
+libopencv_core.so     libopencv_flann.so       libopencv_imgproc.so    libopencv_photo.so      libopencv_superres.so   libopencv_videostab.so
+libopencv_dnn.so      libopencv_highgui.so     libopencv_ml.so         libopencv_shape.so      libopencv_video.so
+
+)
+
