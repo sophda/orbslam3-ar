@@ -31,9 +31,10 @@ include_directories(
 # /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/openssl
 # /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/openssl/include
 # /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/ndk_25_boost_1.79.0/include
-/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Boost-for-Android-master/boost_1_82_0
+#/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Boost-for-Android-master/boost_1_82_0
 # /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Boost-for-Android-master/boost_1_82_0/boost
 /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Sophus
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/boost_1_82_0
 # opencv
 /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include
 
@@ -43,7 +44,7 @@ link_directories(/home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/l
 link_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/arm64_build)
 link_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/armv8a_build)
 link_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/arm64_build)
-
+link_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/boost_1_82_0/arm64_lib)
 
 
 add_library(${PROJECT_NAME} SHARED fun.cpp   )
@@ -57,4 +58,11 @@ libORB_SLAM3.so
 libopencv_calib3d.so  libopencv_features2d.so  libopencv_imgcodecs.so  libopencv_objdetect.so  libopencv_stitching.so  libopencv_videoio.so
 libopencv_core.so     libopencv_flann.so       libopencv_imgproc.so    libopencv_photo.so      libopencv_superres.so   libopencv_videostab.so
 libopencv_dnn.so      libopencv_highgui.so     libopencv_ml.so         libopencv_shape.so      libopencv_video.so
+
+# libboost_atomic.so
+# libboost_serialization.so
+# libboost_system.so
+libboost_atomic-clang-mt-a64-1_82.a
+libboost_serialization-clang-mt-a64-1_82.a
+libboost_system-clang-mt-a64-1_82.a
 )

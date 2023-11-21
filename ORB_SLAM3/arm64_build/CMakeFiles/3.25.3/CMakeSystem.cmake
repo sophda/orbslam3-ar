@@ -1,6 +1,6 @@
-set(CMAKE_HOST_SYSTEM "Linux-5.15.90.1-microsoft-standard-WSL2")
+set(CMAKE_HOST_SYSTEM "Linux-5.15.133.1-microsoft-standard-WSL2")
 set(CMAKE_HOST_SYSTEM_NAME "Linux")
-set(CMAKE_HOST_SYSTEM_VERSION "5.15.90.1-microsoft-standard-WSL2")
+set(CMAKE_HOST_SYSTEM_VERSION "5.15.133.1-microsoft-standard-WSL2")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "x86_64")
 
 include("/home/sophda/src/android-ndk-r25c/build/cmake/android.toolchain.cmake")

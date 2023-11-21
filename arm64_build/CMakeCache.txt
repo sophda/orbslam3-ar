@@ -229,7 +229,7 @@ slamAR_BINARY_DIR:STATIC=/home/sophda/project/OrbSlam3AR/arm64_build
 slamAR_IS_TOP_LEVEL:STATIC=ON
 
 //Dependencies for the target
-slamAR_LIB_DEPENDS:STATIC=general;libg2o.so;general;libDBoW2.so;general;libORB_SLAM3.so;general;libopencv_calib3d.so;general;libopencv_features2d.so;general;libopencv_imgcodecs.so;general;libopencv_objdetect.so;general;libopencv_stitching.so;general;libopencv_videoio.so;general;libopencv_core.so;general;libopencv_flann.so;general;libopencv_imgproc.so;general;libopencv_photo.so;general;libopencv_superres.so;general;libopencv_videostab.so;general;libopencv_dnn.so;general;libopencv_highgui.so;general;libopencv_ml.so;general;libopencv_shape.so;general;libopencv_video.so;
+slamAR_LIB_DEPENDS:STATIC=general;libg2o.so;general;libDBoW2.so;general;libORB_SLAM3.so;general;libopencv_calib3d.so;general;libopencv_features2d.so;general;libopencv_imgcodecs.so;general;libopencv_objdetect.so;general;libopencv_stitching.so;general;libopencv_videoio.so;general;libopencv_core.so;general;libopencv_flann.so;general;libopencv_imgproc.so;general;libopencv_photo.so;general;libopencv_superres.so;general;libopencv_videostab.so;general;libopencv_dnn.so;general;libopencv_highgui.so;general;libopencv_ml.so;general;libopencv_shape.so;general;libopencv_video.so;general;libboost_atomic-clang-mt-a64-1_82.a;general;libboost_serialization-clang-mt-a64-1_82.a;general;libboost_system-clang-mt-a64-1_82.a;
 
 //Value Computed by CMake
 slamAR_SOURCE_DIR:STATIC=/home/sophda/project/OrbSlam3AR

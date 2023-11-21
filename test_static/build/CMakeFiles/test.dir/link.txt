@@ -1,0 +1,2 @@
+/home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar qc libtest.a CMakeFiles/test.dir/fun.cpp.o
+/home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib libtest.a
