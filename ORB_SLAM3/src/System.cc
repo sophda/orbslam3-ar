@@ -17,7 +17,7 @@
 */
 
 
-
+#include <fstream>
 #include "System.h"
 #include "Converter.h"
 #include <thread>
@@ -26,13 +26,16 @@
 // #include <openssl/md5.h>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/string.hpp>
-// #include <boost/archive/text_iarchive.hpp>
-// #include <boost/archive/text_oarchive.hpp>
-// #include <boost/archive/binary_iarchive.hpp>
-// #include <boost/archive/binary_oarchive.hpp>
-// #include <boost/archive/xml_iarchive.hpp>
-// #include <boost/archive/xml_oarchive.hpp>
-// #include <boost/uuid/detail/md5.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/uuid/detail/md5.hpp>
+#include <time.h>
+
+
 typedef uint32_t MD5_u32plus;
 
 typedef struct {
@@ -74,6 +77,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         cout << "Stereo-Inertial" << endl;
     else if(mSensor==IMU_RGBD)
         cout << "RGB-D-Inertial" << endl;
+    
+    // 记录 debug
 
     //Check settings file
     cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
@@ -97,6 +102,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         cv::FileNode node = fsSettings["System.LoadAtlasFromFile"];
         if(!node.empty() && node.isString())
         {
+            // 这个值就是再yaml文件里的值
             mStrLoadAtlasFromFile = (string)node;
         }
 
@@ -117,7 +123,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mStrVocabularyFilePath = strVocFile;
 
     bool loadedAtlas = false;
-
+    // 如果设了值的话，就会执行else：load atlas
     if(mStrLoadAtlasFromFile.empty())
     {
         //Load ORB Vocabulary
@@ -141,13 +147,15 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         cout << "Initialization of Atlas from scratch " << endl;
         mpAtlas = new Atlas(0);
     }
+
+    // 我们要加载地图，所以从这个地方开始执行
     else
     {
         //Load ORB Vocabulary
         cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
         mpVocabulary = new ORBVocabulary();
-        bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
+        bool bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
         if(!bVocLoad)
         {
             cerr << "Wrong path to vocabulary. " << endl;
@@ -232,6 +240,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     mpLoopCloser->SetTracker(mpTracker);
     mpLoopCloser->SetLocalMapper(mpLocalMapper);
+
 
     //usleep(10*1000*1000);
 
@@ -1418,37 +1427,46 @@ void System::SaveAtlas(int type){
         // Save the current session
         mpAtlas->PreSave();
 
-        string pathSaveFileName = "./";
+        string pathSaveFileName = "/storage/emulated/0/4DAR/";
         pathSaveFileName = pathSaveFileName.append(mStrSaveAtlasToFile);
         pathSaveFileName = pathSaveFileName.append(".osa");
 
-        string strVocabularyChecksum = CalculateCheckSum(mStrVocabularyFilePath,TEXT_FILE);
+        // string strVocabularyChecksum = CalculateCheckSum(mStrVocabularyFilePath,TEXT_FILE);
         std::size_t found = mStrVocabularyFilePath.find_last_of("/\\");
         string strVocabularyName = mStrVocabularyFilePath.substr(found+1);
+        Log("save atlas");
 
-        if(type == TEXT_FILE) // File text
-        {
-            cout << "Starting to write the save text file " << endl;
-            std::remove(pathSaveFileName.c_str());
-            std::ofstream ofs(pathSaveFileName, std::ios::binary);
-            // boost::archive::text_oarchive oa(ofs);
+        // std::ofstream outfile("/storage/emulated/0/4DAR/log_boost.txt",std::ios::binary);
+        // boost::archive::text_oarchive out(outfile);
+        // out<<"hello boost";
+        std::ofstream ofs(pathSaveFileName, std::ios::binary);
+        boost::archive::binary_oarchive oa(ofs);
+        oa << strVocabularyName;
+        oa << mpAtlas;
 
-            // oa << strVocabularyName;
-            // oa << strVocabularyChecksum;
-            // oa << mpAtlas;
-            cout << "End to write the save text file" << endl;
-        }
-        else if(type == BINARY_FILE) // File binary
-        {
-            cout << "Starting to write the save binary file" << endl;
-            std::remove(pathSaveFileName.c_str());
-            std::ofstream ofs(pathSaveFileName, std::ios::binary);
-            // boost::archive::binary_oarchive oa(ofs);
-            // oa << strVocabularyName;
-            // oa << strVocabularyChecksum;
-            // oa << mpAtlas;
-            // cout << "End to write save binary file" << endl;
-        }
+        // if(type == TEXT_FILE) // File text
+        // {
+        //     cout << "Starting to write the save text file " << endl;
+        //     std::remove(pathSaveFileName.c_str());
+        //     std::ofstream ofs(pathSaveFileName, std::ios::binary);
+        //     boost::archive::text_oarchive oa(ofs);
+
+        //     oa << strVocabularyName;
+        //     // oa << strVocabularyChecksum;
+        //     oa << mpAtlas;
+        //     cout << "End to write the save text file" << endl;
+        // }
+        // else if(type == BINARY_FILE) // File binary
+        // {
+        //     cout << "Starting to write the save binary file" << endl;
+        //     std::remove(pathSaveFileName.c_str());
+        //     std::ofstream ofs(pathSaveFileName, std::ios::binary);
+        //     boost::archive::binary_oarchive oa(ofs);
+        //     oa << strVocabularyName;
+        //     // oa << strVocabularyChecksum;
+        //     // oa << mpAtlas;
+        //     // cout << "End to write save binary file" << endl;
+        // }
     }
 }
 
@@ -1457,7 +1475,7 @@ bool System::LoadAtlas(int type)
     string strFileVoc, strVocChecksum;
     bool isRead = false;
 
-    string pathLoadFileName = "./";
+    string pathLoadFileName = "";
     pathLoadFileName = pathLoadFileName.append(mStrLoadAtlasFromFile);
     pathLoadFileName = pathLoadFileName.append(".osa");
 
@@ -1470,10 +1488,10 @@ bool System::LoadAtlas(int type)
             cout << "Load file not found" << endl;
             return false;
         }
-        // boost::archive::text_iarchive ia(ifs);
-        // ia >> strFileVoc;
+        boost::archive::text_iarchive ia(ifs);
+        ia >> strFileVoc;
         // ia >> strVocChecksum;
-        // ia >> mpAtlas;
+        ia >> mpAtlas;
         // cout << "End to load the save text file " << endl;
         isRead = true;
     }
@@ -1486,25 +1504,25 @@ bool System::LoadAtlas(int type)
             cout << "Load file not found" << endl;
             return false;
         }
-        // boost::archive::binary_iarchive ia(ifs);
-        // ia >> strFileVoc;
+        boost::archive::binary_iarchive ia(ifs);
+        ia >> strFileVoc;
         // ia >> strVocChecksum;
-        // ia >> mpAtlas;
-        // cout << "End to load the save binary file" << endl;
+        ia >> mpAtlas;
+        cout << "End to load the save binary file" << endl;
         isRead = true;
     }
 
     if(isRead)
     {
-        //Check if the vocabulary is the same
-        string strInputVocabularyChecksum = CalculateCheckSum(mStrVocabularyFilePath,TEXT_FILE);
+        // //Check if the vocabulary is the same
+        // string strInputVocabularyChecksum = CalculateCheckSum(mStrVocabularyFilePath,TEXT_FILE);
 
-        if(strInputVocabularyChecksum.compare(strVocChecksum) != 0)
-        {
-            cout << "The vocabulary load isn't the same which the load session was created " << endl;
-            cout << "-Vocabulary name: " << strFileVoc << endl;
-            return false; // Both are differents
-        }
+        // if(strInputVocabularyChecksum.compare(strVocChecksum) != 0)
+        // {
+        //     cout << "The vocabulary load isn't the same which the load session was created " << endl;
+        //     cout << "-Vocabulary name: " << strFileVoc << endl;
+        //     return false; // Both are differents
+        // }
 
         mpAtlas->SetKeyFrameDababase(mpKeyFrameDatabase);
         mpAtlas->SetORBVocabulary(mpVocabulary);
@@ -1564,6 +1582,21 @@ void System::GetLocalMap(vector<MapPoint*> & localMap)
     const vector<MapPoint*> vpmaps = activeMap->GetAllMapPoints();
     localMap = vpmaps;
 
+}
+void System::Log(string str)
+{
+    std::ofstream out;
+    // get the time
+    time_t timep;
+    time(&timep);
+
+    out.open("/storage/emulated/0/4DAR/log.txt");
+    // out<< "call save altas function" <<std::endl;
+    out << asctime(localtime(&timep)) << "      :" <<str<<std::endl;
+
+    
+    
+    out.close();
 }
 
 } //namespace ORB_SLAM

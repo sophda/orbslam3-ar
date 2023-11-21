@@ -1,14 +1,14 @@
 // #include "System.h"
 #include <opencv2/opencv.hpp>
-
+#include "boost/version.hpp"
 #include <iostream>
 #include <fstream>
 #include "Eigen/Core"
 
 #include <iomanip>
-#include<string>
-#include<thread>
-#include<opencv2/core/core.hpp>
+#include <string>
+#include <thread>
+#include <opencv2/core/core.hpp>
 #include "System.h"
 #include "Atlas.h"
 #include "Map.h"
@@ -18,6 +18,9 @@ using namespace cv;
 // using namespace ORB_SLAM3;
 string settings_file = "/storage/emulated/0/4DAR/Settings.yaml";
 string voc_file = "/storage/emulated/0/4DAR/ORBvoc.bin";
+
+void ransac(vector<Point3f>& pts_3d, int max_iter, float threshold,
+double &a1,double &b1,double &c1,double &d1);
 
 // test
 extern "C"
@@ -33,7 +36,7 @@ extern "C"
 ORB_SLAM3::System SLAM(voc_file,settings_file,ORB_SLAM3::System::MONOCULAR, false);
 // ORB_SLAM3::Map *activeMap ;
 
-Sophus::SE3f tcw;
+Sophus::SE3f tcw; 
 Mat img_glob;
 Mat pose;
 
@@ -74,7 +77,6 @@ extern "C"
         // slam_t = -pose.rowRange(0,3).colRange(0,3).t()*se_translation;
         slam_t = se_translation;
 
-
         R[0] = pose.at<float>(0,0);
         R[1] = pose.at<float>(1,0);
         R[2] = pose.at<float>(2,0);
@@ -83,12 +85,11 @@ extern "C"
         R[5] = pose.at<float>(2,1);
         R[6] = pose.at<float>(0,2);
         R[7] = pose.at<float>(1,2);
-        R[8] = pose.at<float>(2,2); 
+        R[8] = pose.at<float>(2,2);
         T[0] = slam_t.at<float>(0,0);
         T[1] = slam_t.at<float>(1,0);
         T[2] = slam_t.at<float>(2,0);
         
-
     }
 }
 
@@ -96,7 +97,15 @@ extern "C"
 {
     void SaveImage()
     {
-        imwrite("/storage/emulated/0/4DAR/l.jpg",img_glob);
+        imwrite("/storage/emulated/0/4DAR/l.jpg", img_glob);
+    }
+}
+
+extern "C"
+{
+    void SaveMap()
+    {
+        // SLAM.SaveAtlas(0);
     }
 }
 extern "C"
@@ -115,8 +124,6 @@ extern "C"
         // ORB_SLAM3::Atlas *atlas;
         vector<ORB_SLAM3::MapPoint*> vpmaps ;
         SLAM.GetLocalMap(vpmaps);
-
-        
         vector<Point3f> mapPoints;
 
         out <<"WIDTH"<< " "<<vpmaps.size()<<"\n"
@@ -142,9 +149,123 @@ extern "C"
         }
         out.close();
 
+    }
+}
+
+extern "C"
+{
+    void FitPlane(double plane_arg[])
+    {
+        double a,b,c,d;
+        vector<ORB_SLAM3::MapPoint*> vpmaps ;
+        SLAM.GetLocalMap(vpmaps);
+        vector<Point3f> mapPoints;
+        for(size_t i = 0,iend = vpmaps.size();i<iend;i++)
+        {
+            if (vpmaps[i]->isBad())
+                continue;
+            Eigen::Matrix<float ,3,1> pos = vpmaps[i]->GetWorldPos();
+            Point3f tmpPoint;
+            tmpPoint.x = pos(0);
+            tmpPoint.y = pos(1);
+            tmpPoint.z = pos(2);
+            mapPoints.push_back(tmpPoint);
+        }
+        ransac(mapPoints,100,2,a,b,c,d);
+        plane_arg[0] = a;
+        plane_arg[1] = b;
+        plane_arg[2] = c;
+        plane_arg[3] = d;
+    }
+}
 
 
+void ransac(vector<Point3f>& pts_3d, int max_iter, float threshold,
+double &a1,double &b1,double &c1,double &d1)
+{
+    int size_old = 3;
+    double a,b,c,d; //
+
+    while (--max_iter)
+    {
+        /* code */
+        vector<int > index;
+        for (int k = 0;k<3;++k)
+        {
+            index.push_back(rand() % pts_3d.size());
+
+        }
+
+        // 根据迭代器获取三个点的xyz坐标
+        auto idx = index.begin();
+        double x1 = pts_3d.at(*idx).x;
+        double y1 = pts_3d.at(*idx).y;
+        double z1 = pts_3d.at(*idx).z;
+        idx++;
+
+        double x2 = pts_3d.at(*idx).x;
+        double y2 = pts_3d.at(*idx).y;
+        double z2 = pts_3d.at(*idx).z;
+        idx++;
+
+        double x3 = pts_3d.at(*idx).x;
+        double y3 = pts_3d.at(*idx).y;
+        double z3 = pts_3d.at(*idx).z;
+
+        //根据三个点来拟合平面
+        a = (y2 - y1)*(z3 - z1) - (z2 - z1)*(y3 - y1);
+		b = (z2 - z1)*(x3 - x1) - (x2 - x1)*(z3 - z1);
+		c = (x2 - x1)*(y3 - y1) - (y2 - y1)*(x3 - x1);
+		d = -(a*x1 + b*y1 + c*z1);
+
+        for(auto iter = pts_3d.begin();iter != pts_3d.end(); ++iter)
+        {
+            double dis = fabs(a*iter->x 
+                            + b*iter->y
+                            + c*iter->z +d)/
+                            sqrt(a*a+b*b+c*c);
+
+            if(dis < threshold)
+            {
+                index.push_back(iter - pts_3d.begin());
+            }
+
+            if (index.size() > size_old)
+            {
+                size_old = index.size();
+            }
+            index.clear();
+
+        }
+
+    }
+    a1 = a;
+    b1 = b;
+    c1 = c;
+    d1 = d;
+    
+}
+
+//  test boost
+
+extern "C"
+{
+    void GetBoost()
+    {
+        ofstream out_boost;
+        out_boost.open("/storage/emulated/0/4DAR/boost.txt");
+        out_boost <<"get:"   <<BOOST_LIB_VERSION <<endl;
+        out_boost.close();
 
 
+    }
+}
+
+extern "C"
+{
+    void SlamShutDown()
+    {
+        // save atlas
+        SLAM.Shutdown();
     }
 }

@@ -83,6 +83,7 @@ class Settings;
 class System
 {
 public:
+    
     // Input sensor
     enum eSensor{
         MONOCULAR=0,
@@ -100,6 +101,9 @@ public:
     };
 
 public:
+
+
+    
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
     System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true, const int initFr = 0, const string &strSequence = std::string());
@@ -188,17 +192,21 @@ public:
 
     void GetLocalMap(vector<MapPoint*> & localMap);
 
+    void Log(string str);
+
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);
     void InsertResizeTime(double& time);
     void InsertTrackTime(double& time);
 #endif
 
+
+ 
 private:
 
     void SaveAtlas(int type);
     bool LoadAtlas(int type);
-
+    
     string CalculateCheckSum(string filename, int type);
 
     // Input sensor
