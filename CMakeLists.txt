@@ -1,13 +1,21 @@
+# set(CMAKE_TOOLCHAIN_FILE "/home/sophda/src/android-ndk-r25c/build/cmake/android.toolchain.cmake" )
+
 cmake_minimum_required(VERSION 3.4.1)
 SET(PROJECT_NAME slamAR)
+
 project(${PROJECT_NAME})
+# message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
+
+# include("/home/sophda/src/android-ndk-r25c/build/cmake/android.toolchain.cmake")
+
 # set(CMAKE_CXX_FLAGS "-O3 -Wall -W -fPIC -fpermissive")
 # SET(CMAKE_C_FLAGS "-O3 -Wall -W -fPIC")
 
 set(ANDROID_ABI "arm64-v8a" CACHE STRING "")
 set(ANDROID_PLATFORM "19" CACHE STRING "")
+# set(CMAKE_CXX_COMPILER clang++)
+# set(CMAKE_C_COMPILER clang)
 # set(ANDROID_NDK "/home/sophda/src/android-ndk-r25c" CACHE STRING "")
-# set(CMAKE_TOOLCHAIN_FILE "/home/sophda/src/android-ndk-r25c/build/cmake/android.toolchain.cmake" CACHE STRING "")
 # add_compile_definitions(ANDROID_ABI arm64-v8a)
 
 # set(OpenCV_DIR /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni)
@@ -37,8 +45,9 @@ include_directories(
 /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/boost_1_82_0
 # opencv
 /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include
-
 )
+
+include_directories(/home/sophda/project/OrbSlam3AR/src)
 
 link_directories(/home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/libs/arm64-v8a)
 link_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/arm64_build)
@@ -47,7 +56,7 @@ link_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/arm64_build)
 link_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/boost_1_82_0/arm64_lib)
 
 
-add_library(${PROJECT_NAME} SHARED fun.cpp   )
+add_library(${PROJECT_NAME} SHARED fun.cpp  src/ICP.cpp )
 target_link_libraries(${PROJECT_NAME} 
 
 

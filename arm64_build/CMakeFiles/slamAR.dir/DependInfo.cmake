@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/sophda/project/OrbSlam3AR/fun.cpp" "CMakeFiles/slamAR.dir/fun.cpp.o" "gcc" "CMakeFiles/slamAR.dir/fun.cpp.o.d"
+  "/home/sophda/project/OrbSlam3AR/src/ICP.cpp" "CMakeFiles/slamAR.dir/src/ICP.cpp.o" "gcc" "CMakeFiles/slamAR.dir/src/ICP.cpp.o.d"
   )
 
 # Targets to which this target links.

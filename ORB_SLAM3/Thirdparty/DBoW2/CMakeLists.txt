@@ -48,8 +48,8 @@ include_directories(
 # /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/ndk_25_boost_1.79.0/include/
 # /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/ndk_25_boost_1.79.0/include/boost
 # /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/ndk_25_boost_1.79.0/include/boost/serialization
-/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Boost-for-Android-master/boost_1_82_0
-/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Boost-for-Android-master/boost_1_82_0/boost
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/boost_1_82_0
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/boost_1_82_0/boost
 # opencv
 /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include
 )

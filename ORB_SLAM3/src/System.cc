@@ -18,6 +18,7 @@
 
 
 #include <fstream>
+#include<string>
 #include "System.h"
 #include "Converter.h"
 #include <thread>
@@ -53,7 +54,7 @@ Verbose::eLevel Verbose::th = Verbose::VERBOSITY_NORMAL;
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
                const bool bUseViewer, const int initFr, const string &strSequence):
     mSensor(sensor), mbReset(false), mbResetActiveMap(false),
-    mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false), mbShutDown(false)
+    mbActivateLocalizationMode(true), mbDeactivateLocalizationMode(false), mbShutDown(false)
 {
     // Output welcome message
     cout << endl <<
@@ -126,6 +127,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     // 如果设了值的话，就会执行else：load atlas
     if(mStrLoadAtlasFromFile.empty())
     {
+        Log("no atlas");
         //Load ORB Vocabulary
         cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
@@ -153,7 +155,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     {
         //Load ORB Vocabulary
         cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
-
+        Log("loading orb vocabulary");
         mpVocabulary = new ORBVocabulary();
         bool bVocLoad = mpVocabulary->loadFromBinaryFile(strVocFile);
         if(!bVocLoad)
@@ -168,12 +170,15 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
         cout << "Load File" << endl;
+        Log("load file");
 
         // Load the file with an earlier session
         //clock_t start = clock();
+
+        Log("init atlas");
         cout << "Initialization of Atlas from file: " << mStrLoadAtlasFromFile << endl;
         bool isRead = LoadAtlas(FileType::BINARY_FILE);
-
+        Log("done atlas");
         if(!isRead)
         {
             cout << "Error to load the file, please try with other session file or vocabulary file" << endl;
@@ -186,7 +191,10 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
         loadedAtlas = true;
 
-        mpAtlas->CreateNewMap();
+        // mpAtlas->CreateNewMap();
+        // 不要创建新地图
+        vector<Map*> multiMap = mpAtlas->GetAllMaps();
+        cout<< multiMap.size();
 
         //clock_t timeElapsed = clock() - start;
         //unsigned msElapsed = timeElapsed / (CLOCKS_PER_SEC / 1000);
@@ -488,7 +496,6 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
-
     return Tcw;
 }
 
@@ -1489,6 +1496,7 @@ bool System::LoadAtlas(int type)
             return false;
         }
         boost::archive::text_iarchive ia(ifs);
+        
         ia >> strFileVoc;
         // ia >> strVocChecksum;
         ia >> mpAtlas;
@@ -1498,17 +1506,24 @@ bool System::LoadAtlas(int type)
     else if(type == BINARY_FILE) // File binary
     {
         cout << "Starting to read the save binary file"  << endl;
+        Log("savefun:starting to read");
         std::ifstream ifs(pathLoadFileName, std::ios::binary);
         if(!ifs.good())
         {
             cout << "Load file not found" << endl;
             return false;
         }
+
         boost::archive::binary_iarchive ia(ifs);
+        
+        Log("savefun:ia created");
+        Log("aaa");
+        Log("ccc");
         ia >> strFileVoc;
         // ia >> strVocChecksum;
         ia >> mpAtlas;
         cout << "End to load the save binary file" << endl;
+        Log("savefun:end to read");
         isRead = true;
     }
 
@@ -1590,7 +1605,7 @@ void System::Log(string str)
     time_t timep;
     time(&timep);
 
-    out.open("/storage/emulated/0/4DAR/log.txt");
+    out.open("/storage/emulated/0/4DAR/log.txt",ios::out|ios::app);
     // out<< "call save altas function" <<std::endl;
     out << asctime(localtime(&timep)) << "      :" <<str<<std::endl;
 
