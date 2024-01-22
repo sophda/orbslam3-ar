@@ -153,6 +153,30 @@ fun.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/slamAR.dir/build.make CMakeFiles/slamAR.dir/fun.cpp.s
 .PHONY : fun.cpp.s
 
+src/ICP.o: src/ICP.cpp.o
+.PHONY : src/ICP.o
+
+# target to build an object file
+src/ICP.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slamAR.dir/build.make CMakeFiles/slamAR.dir/src/ICP.cpp.o
+.PHONY : src/ICP.cpp.o
+
+src/ICP.i: src/ICP.cpp.i
+.PHONY : src/ICP.i
+
+# target to preprocess a source file
+src/ICP.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slamAR.dir/build.make CMakeFiles/slamAR.dir/src/ICP.cpp.i
+.PHONY : src/ICP.cpp.i
+
+src/ICP.s: src/ICP.cpp.s
+.PHONY : src/ICP.s
+
+# target to generate assembly for a file
+src/ICP.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/slamAR.dir/build.make CMakeFiles/slamAR.dir/src/ICP.cpp.s
+.PHONY : src/ICP.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -165,6 +189,9 @@ help:
 	@echo "... fun.o"
 	@echo "... fun.i"
 	@echo "... fun.s"
+	@echo "... src/ICP.o"
+	@echo "... src/ICP.i"
+	@echo "... src/ICP.s"
 .PHONY : help
 
 
