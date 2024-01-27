@@ -117,6 +117,7 @@ GeometricCamera* Atlas::AddCamera(GeometricCamera* pCam)
     //Check if the camera already exists
     bool bAlreadyInMap = false;
     int index_cam = -1;
+    int outcam = 0;
     for(size_t i=0; i < mvpCameras.size(); ++i)
     {
         GeometricCamera* pCam_i = mvpCameras[i];
@@ -142,7 +143,7 @@ GeometricCamera* Atlas::AddCamera(GeometricCamera* pCam)
             }
         }
     }
-
+    // changeflag
     if(bAlreadyInMap)
     {
         return mvpCameras[index_cam];
@@ -151,6 +152,7 @@ GeometricCamera* Atlas::AddCamera(GeometricCamera* pCam)
         mvpCameras.push_back(pCam);
         return pCam;
     }
+    // return mvpCameras[0];
 }
 
 std::vector<GeometricCamera*> Atlas::GetAllCameras()
