@@ -3216,7 +3216,7 @@ bool Tracking::TrackLocalMap()
 // }
 bool Tracking::NeedNewKeyFrame()
 {
-    cout <<"need new keyframe 3095"<<endl;
+    // cout <<"need new keyframe 3095"<<endl;
     if((mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD) && !mpAtlas->GetCurrentMap()->isImuInitialized())
     {
         if (mSensor == System::IMU_MONOCULAR && (mCurrentFrame.mTimeStamp-mpLastKeyFrame->mTimeStamp)>=0.25)
@@ -4275,5 +4275,7 @@ void Tracking::Release()
     mbStopRequested = false;
 }
 #endif
+
+
 
 } //namespace ORB_SLAM

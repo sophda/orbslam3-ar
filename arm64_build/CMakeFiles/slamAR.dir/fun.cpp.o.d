@@ -10,7 +10,6 @@ CMakeFiles/slamAR.dir/fun.cpp.o: /home/sophda/project/OrbSlam3AR/fun.cpp \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/cdefs.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/versioning.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/api-level.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/get_device_api_level_inlines.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/ndk-version.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/pthread.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/type_traits \
@@ -64,7 +63,6 @@ CMakeFiles/slamAR.dir/fun.cpp.o: /home/sophda/project/OrbSlam3AR/fun.cpp \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdio.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/stdarg.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/seek_constants.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/struct_file.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/fortify/stdio.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/time.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/time.h \
@@ -450,7 +448,6 @@ CMakeFiles/slamAR.dir/fun.cpp.o: /home/sophda/project/OrbSlam3AR/fun.cpp \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/sysconf.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/fortify/unistd.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/legacy_unistd_inlines.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/swab.h \
   /home/sophda/project/OrbSlam3AR/ORB_SLAM3/include/Tracking.h \
   /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/features2d/features2d.hpp \
   /home/sophda/project/OrbSlam3AR/ORB_SLAM3/include/Atlas.h \

@@ -20,6 +20,8 @@ string settings_file = "/storage/emulated/0/4DAR/Settings.yaml";
 string voc_file = "/storage/emulated/0/4DAR/ORBvoc.bin";
 
 cv::VideoWriter videoout;
+std::ofstream gyro;
+int timestamp_gyro = 0;
 int coder=cv::VideoWriter::fourcc('M','J','P','G');//选择编码格式
 
 
@@ -147,12 +149,22 @@ extern "C"
 
 extern "C"
 {
-    void SaveImage(uchar *image_data,int a)
+    void mapping()
+    {
+        SLAM.change2mapping();
+    }
+}
+
+extern "C"
+{
+    void SaveImage(uchar *image_data,float g_data[], int a)
     {
 
         if(!savevideoinit)
         {
-            videoout.open("/storage/emulated/0/4DAR/map.avi",coder,30,cv::Size(640,480));
+            gyro.open("/storage/emulated/0/4DAR/gyro.txt", ios::out);
+            videoout.open("/storage/emulated/0/4DAR/map.avi",coder,30,cv::Size(1280,720));
+            gyro<<"#timestamp [frame id],w_RS_S_x [rad s^-1],w_RS_S_y [rad s^-1],w_RS_S_z [rad s^-1],a_RS_S_x [m s^-2],a_RS_S_y [m s^-2],a_RS_S_z [m s^-2]"<<endl;
             savevideoinit = true;
         }
         if (a==0)
@@ -161,8 +173,13 @@ extern "C"
         }
         if(a==1)
         {
+            gyro<<timestamp_gyro<<","
+            << g_data[0]<<","<<g_data[1]<<","<<g_data[2]<<","
+            << g_data[3]<<","<<g_data[4]<<","<<g_data[5]<<endl;
+            timestamp_gyro ++;
+            
             Mat img_rec;
-            img_rec = Mat(480,640,CV_8UC4,image_data);
+            img_rec = Mat(720,1280,CV_8UC4,image_data);
 
             // float imageScale = SLAM.GetImageScale();
             // int new_width = img_rec.cols * imageScale;
@@ -354,18 +371,18 @@ float &a1,float &b1,float &c1,float &d1)
 
 //  test boost
 
-extern "C"
-{
-    void GetBoost()
-    {
-        ofstream out_boost;
-        out_boost.open("/storage/emulated/0/4DAR/boost.txt");
-        out_boost <<"get:"   <<BOOST_LIB_VERSION <<endl;
-        out_boost.close();
+// extern "C"
+// {
+//     void GetBoost()
+//     {
+//         ofstream out_boost;
+//         out_boost.open("/storage/emulated/0/4DAR/boost.txt");
+//         out_boost <<"get:"   <<BOOST_LIB_VERSION <<endl;
+//         out_boost.close();
 
 
-    }
-}
+//     }
+// }
 
 extern "C"
 {
