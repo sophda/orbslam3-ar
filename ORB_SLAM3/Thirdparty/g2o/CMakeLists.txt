@@ -80,9 +80,9 @@ SET (G2O_LIB_TYPE SHARED)
 #   SET(G2O_EIGEN3_INCLUDE "" CACHE PATH "Directory of Eigen3")
 # ENDIF(EIGEN3_FOUND)
 
-include_directories("/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0")
-include_directories("/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0/Eigen")
-include_directories("/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0/Eigen/src")
+include_directories("../eigen-3.4.0")
+include_directories("../eigen-3.4.0/Eigen")
+include_directories("../eigen-3.4.0/Eigen/src")
 
 # Generate config.h
 SET(G2O_CXX_COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}")

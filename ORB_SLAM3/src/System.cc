@@ -1614,5 +1614,12 @@ void System::Log(string str)
     out.close();
 }
 
+void System::change2mapping()
+{
+    mbDeactivateLocalizationMode = true;
+}
+
+
+
 } //namespace ORB_SLAM
 

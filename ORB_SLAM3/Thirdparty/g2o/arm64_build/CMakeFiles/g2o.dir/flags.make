@@ -5,13 +5,13 @@
 # compile CXX with /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++
 C_DEFINES = -Dg2o_EXPORTS
 
-C_INCLUDES = -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0 -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0/Eigen -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0/Eigen/src -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/core -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/types -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/stuff
+C_INCLUDES = -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/../eigen-3.4.0 -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/../eigen-3.4.0/Eigen -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/../eigen-3.4.0/Eigen/src -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/core -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/types -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/stuff
 
 C_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -fPIC
 
 CXX_DEFINES = -Dg2o_EXPORTS
 
-CXX_INCLUDES = -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0 -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0/Eigen -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/eigen-3.4.0/Eigen/src -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/core -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/types -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/stuff
+CXX_INCLUDES = -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/../eigen-3.4.0 -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/../eigen-3.4.0/Eigen -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/../eigen-3.4.0/Eigen/src -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/core -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/types -I/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/stuff
 
 CXX_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -fPIC
 
