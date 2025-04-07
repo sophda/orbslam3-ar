@@ -54,7 +54,7 @@ Verbose::eLevel Verbose::th = Verbose::VERBOSITY_NORMAL;
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
                const bool bUseViewer, const int initFr, const string &strSequence):
     mSensor(sensor), mbReset(false), mbResetActiveMap(false),
-    mbActivateLocalizationMode(true), mbDeactivateLocalizationMode(false), mbShutDown(false)
+    mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false), mbShutDown(false)
 {
     // Output welcome message
     cout << endl <<
@@ -191,10 +191,10 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
         loadedAtlas = true;
 
-        // mpAtlas->CreateNewMap();
+        mpAtlas->CreateNewMap();
         // 不要创建新地图
-        vector<Map*> multiMap = mpAtlas->GetAllMaps();
-        cout<< multiMap.size();
+        // vector<Map*> multiMap = mpAtlas->GetAllMaps();
+        // cout<< multiMap.size();
 
         //clock_t timeElapsed = clock() - start;
         //unsigned msElapsed = timeElapsed / (CLOCKS_PER_SEC / 1000);
