@@ -43,7 +43,7 @@ public:
     
     PoseMerge(std::shared_ptr<ORB_SLAM3::System> orbsys);
 
-    PoseMerge(std::string& vocbin, std::string& yaml, std::string& ace_model_path);
+    PoseMerge(std::string vocbin, std::string yaml, std::string ace_model_path);
 
     void putImg(cv::Mat& img, double timestamp);
 
