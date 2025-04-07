@@ -65,7 +65,7 @@ extern "C"
 // ORB_SLAM3::System SLAM(voc_file,settings_file,ORB_SLAM3::System::MONOCULAR);
 // ORB_SLAM3::Map *activeMap ;
 
-std::shared_ptr<PoseMerge > poseMerge = std::make_shared<PoseMerge >(voc_file,settings_file,"");
+std::shared_ptr<PoseMerge > poseMerge = std::make_shared<PoseMerge >(voc_file, settings_file,"");
 
 Sophus::SE3f tcw; 
 Mat img_glob;
@@ -112,7 +112,7 @@ extern "C"
         
 
         poseMerge->putImg(img_gray, timestamp);
-        Eigen::Matrix4f twc = PoseMerge->getPose();
+        Eigen::Matrix4f twc = poseMerge->getPose();
         Mat twc_mat = Mat(3,3,CV_32FC1, twc.data());
         // R_ = Mat(3,3,CV_32FC1,tcw.rotationMatrix().data());
 

@@ -22,7 +22,7 @@ PoseMerge::PoseMerge(std::shared_ptr<ORB_SLAM3::System> orbsys){
     this->instance_ = this;
 };
 
-PoseMerge::PoseMerge(std::string& vocbin, std::string& yaml, std::string& ace_model_path) {
+PoseMerge::PoseMerge(std::string vocbin, std::string yaml, std::string ace_model_path) {
     this->orbsys_ = std::make_shared<ORB_SLAM3::System>(std::move(vocbin), std::move(yaml), 
                                                         ORB_SLAM3::System::IMU_MONOCULAR);
 
