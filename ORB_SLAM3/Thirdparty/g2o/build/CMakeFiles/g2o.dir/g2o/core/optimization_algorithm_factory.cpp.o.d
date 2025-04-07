@@ -1,4 +1,4 @@
-CMakeFiles/g2o.dir/g2o/core/optimization_algorithm_factory.cpp.o: \
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/build/CMakeFiles/g2o.dir/g2o/core/optimization_algorithm_factory.cpp.o: \
   /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/g2o/core/optimization_algorithm_factory.cpp \
   /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/g2o/core/optimization_algorithm_factory.h \
   /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/g2o/core/../../config.h \
@@ -10,7 +10,6 @@ CMakeFiles/g2o.dir/g2o/core/optimization_algorithm_factory.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/cdefs.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/versioning.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/api-level.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/get_device_api_level_inlines.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/ndk-version.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/pthread.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/math.h \
@@ -33,37 +32,30 @@ CMakeFiles/g2o.dir/g2o/core/optimization_algorithm_factory.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdint.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/wchar_limits.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/types.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/types.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/types.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/int-ll64.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/bitsperlong.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/bitsperlong.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/bitsperlong.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/posix_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/stddef.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/compiler_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/compiler.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/posix_types.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/posix_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/posix_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/pthread_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/stdarg.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/seek_constants.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/struct_file.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/fortify/stdio.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/xlocale.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/fortify/stdlib.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/legacy_stdlib_inlines.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/errno-base.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/legacy_errno_inlines.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/float.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/float.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/math.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/limits.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/limits.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/limits.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/float.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/float.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/limits.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/posix_limits.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/type_traits \
@@ -98,12 +90,14 @@ CMakeFiles/g2o.dir/g2o/core/optimization_algorithm_factory.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/time_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/select.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/signal.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/sigcontext.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/sigcontext.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/sve_context.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/signal_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/signal.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/signal.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/signal.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/signal.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/signal-defs.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/siginfo.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/siginfo.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/siginfo.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/timespec.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/ucontext.h \
@@ -126,6 +120,13 @@ CMakeFiles/g2o.dir/g2o/core/optimization_algorithm_factory.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/ctime \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/ratio \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/climits \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/errno-base.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/legacy_errno_inlines.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sched.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/sched.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/semaphore.h \
@@ -154,7 +155,6 @@ CMakeFiles/g2o.dir/g2o/core/optimization_algorithm_factory.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include/locale.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/locale.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/support/android/locale_bionic.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/support/xlocale/__posix_l_fallback.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/streambuf \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/istream \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/ostream \

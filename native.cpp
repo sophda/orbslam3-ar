@@ -1,5 +1,8 @@
 // #include "System.h"
+#include <future>
+#include <memory>
 #include <opencv2/opencv.hpp>
+#include "PoseMerge.hpp"
 #include "boost/version.hpp"
 #include <iostream>
 #include <fstream>
@@ -12,7 +15,9 @@
 #include "System.h"
 #include "Atlas.h"
 #include "Map.h"
-#include "ICP.h"
+#include "opencv2/core/hal/interface.h"
+#include "opencv2/core/mat.hpp"
+#include "sophus/se3.hpp"
 using namespace std;
 using namespace cv;
 // using namespace ORB_SLAM3;
@@ -31,6 +36,8 @@ bool savevideo = true;
 bool savevideoinit = false;
 void ransac(vector<Point3f>& pts_3d, int max_iter, float threshold,
 float &a1,float &b1,float &c1,float &d1);
+
+
 void Log(string str)
 {
     std::ofstream out;
@@ -55,8 +62,10 @@ extern "C"
 
 
 // slam
-ORB_SLAM3::System SLAM(voc_file,settings_file,ORB_SLAM3::System::MONOCULAR);
+// ORB_SLAM3::System SLAM(voc_file,settings_file,ORB_SLAM3::System::MONOCULAR);
 // ORB_SLAM3::Map *activeMap ;
+
+std::shared_ptr<PoseMerge > poseMerge = std::make_shared<PoseMerge >(voc_file,settings_file,"");
 
 Sophus::SE3f tcw; 
 Mat img_glob;
@@ -64,9 +73,8 @@ Mat R_,R_T;
 
 extern "C"
 {
-    void ProcessImage(uchar *image_data,float T[],float R[], int width, int height)
+    void ProcessImage(uchar *image_data,float T[],float R[], int width, int height, double timestamp)
     {
-        timestamp = timestamp + 0.01;
         Mat img_rec;
         img_rec = Mat(height,width,CV_8UC4,image_data);
 
@@ -103,8 +111,12 @@ extern "C"
         img_glob = img_right;
         
 
-        tcw = SLAM.TrackMonocular(img_gray, 0);
-        R_ = Mat(3,3,CV_32FC1,tcw.rotationMatrix().data());
+        poseMerge->putImg(img_gray, timestamp);
+        Eigen::Matrix4f twc = PoseMerge->getPose();
+        Mat twc_mat = Mat(3,3,CV_32FC1, twc.data());
+        // R_ = Mat(3,3,CV_32FC1,tcw.rotationMatrix().data());
+
+        // Sophus::SE3f twc = tcw.inverse();
         
         Mat slam_r,slam_t,twc_t;
         // R.rowRange(0,3).colRange(0,3).copyTo(r);
@@ -112,6 +124,7 @@ extern "C"
         // slam_r = -R.rowRange(0,2).
         Mat se_translation(3,1,CV_32FC1, tcw.translation().data());
 
+        Mat twc_translation(3,1,CV_32FC1,twc.data());
         // hhh rowRange是左闭右开捏
         // 3*3的旋转矩阵×3*1的平移矩阵，得到世界坐标下的相机位置
         // slam_t = -R.rowRange(0,3).colRange(0,3).t()*se_translation;
@@ -119,7 +132,8 @@ extern "C"
 
         R_T = R_.t();
         // twc_t 是一个3*1向量
-        twc_t = -R_T*slam_t;
+        // twc_t = -R_T*slam_t;
+        twc_t = twc_translation;
 
         // string ss = std::to_string(twc_t.at<float>(0,0))+
         //             std::to_string(twc_t.at<float>(1,0))+
@@ -127,15 +141,15 @@ extern "C"
         // Log(ss);
         // 
 
-        R[0] = R_T.at<float>(0,0);
-        R[1] = R_T.at<float>(1,0);
-        R[2] = R_T.at<float>(2,0);
-        R[3] = R_T.at<float>(0,1);
-        R[4] = R_T.at<float>(1,1);
-        R[5] = R_T.at<float>(2,1);
-        R[6] = R_T.at<float>(0,2);
-        R[7] = R_T.at<float>(1,2);
-        R[8] = R_T.at<float>(2,2);
+        R[0] = twc_mat.at<float>(0,0);
+        R[1] = twc_mat.at<float>(1,0);
+        R[2] = twc_mat.at<float>(2,0);
+        R[3] = twc_mat.at<float>(0,1);
+        R[4] = twc_mat.at<float>(1,1);
+        R[5] = twc_mat.at<float>(2,1);
+        R[6] = twc_mat.at<float>(0,2);
+        R[7] = twc_mat.at<float>(1,2);
+        R[8] = twc_mat.at<float>(2,2);
         T[0] = twc_t.at<float>(0,0);
         T[1] = twc_t.at<float>(1,0);
         T[2] = twc_t.at<float>(2,0);
@@ -151,7 +165,7 @@ extern "C"
 {
     void mapping()
     {
-        SLAM.change2mapping();
+        // SLAM.change2mapping();
     }
 }
 
@@ -235,7 +249,7 @@ extern "C"
         // Atlas 这个类实在orbslam3作用域下声明的，所以要带上作用域或使用namespace
         // ORB_SLAM3::Atlas *atlas;
         vector<ORB_SLAM3::MapPoint*> vpmaps ;
-        SLAM.GetLocalMap(vpmaps);
+        // SLAM.GetLocalMap(vpmaps);
         vector<Point3f> mapPoints;
 
         out <<"WIDTH"<< " "<<vpmaps.size()<<"\n"
@@ -270,7 +284,7 @@ extern "C"
     {
         float a,b,c,d;
         vector<ORB_SLAM3::MapPoint*> vpmaps ;
-        SLAM.GetLocalMap(vpmaps);
+        // SLAM.GetLocalMap(vpmaps);
         vector<Point3f> mapPoints;
         float mean_x,mean_y,mean_z;
         float sum_x=0,sum_y=0,sum_z=0;
@@ -389,7 +403,7 @@ extern "C"
     void SlamShutDown()
     {
         // save atlas
-        SLAM.Shutdown();
+        // SLAM.Shutdown();
     }
 }
 
@@ -398,24 +412,24 @@ extern "C"
          
     void Relocalization(float R_[],float t_[])
     {
-        vector<Eigen::Vector3f> p1,p2;
-        Eigen::Matrix3f R;
-        Eigen::Vector3f t;
-        ReadPcd("/storage/emulated/0/4DAR/local.pcd",p1);
-        ReadPcd("/storage/emulated/0/4DAR/map.pcd",p2);
-        ICP(p1,p2,R,t);
-        R_[0] = R(0,0);
-        R_[0] = R(1,0);
-        R_[0] = R(2,0);
-        R_[0] = R(0,1);
-        R_[0] = R(1,1);
-        R_[0] = R(2,1);
-        R_[0] = R(0,2);
-        R_[0] = R(1,2);
-        R_[0] = R(2,2);
-        t_[0] = t(0);
-        t_[1] = t(1);
-        t_[2] = t(2);
+        // vector<Eigen::Vector3f> p1,p2;
+        // Eigen::Matrix3f R;
+        // Eigen::Vector3f t;
+        // ReadPcd("/storage/emulated/0/4DAR/local.pcd",p1);
+        // ReadPcd("/storage/emulated/0/4DAR/map.pcd",p2);
+        // ICP(p1,p2,R,t);
+        // R_[0] = R(0,0);
+        // R_[0] = R(1,0);
+        // R_[0] = R(2,0);
+        // R_[0] = R(0,1);
+        // R_[0] = R(1,1);
+        // R_[0] = R(2,1);
+        // R_[0] = R(0,2);
+        // R_[0] = R(1,2);
+        // R_[0] = R(2,2);
+        // t_[0] = t(0);
+        // t_[1] = t(1);
+        // t_[2] = t(2);
 
     }
 }

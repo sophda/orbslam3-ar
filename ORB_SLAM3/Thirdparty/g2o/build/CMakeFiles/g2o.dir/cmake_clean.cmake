@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/lib/libg2o.pdb"
-  "/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/g2o/lib/libg2o.so"
   "CMakeFiles/g2o.dir/g2o/core/batch_stats.cpp.o"
   "CMakeFiles/g2o.dir/g2o/core/batch_stats.cpp.o.d"
   "CMakeFiles/g2o.dir/g2o/core/cache.cpp.o"
@@ -61,6 +59,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/g2o.dir/g2o/types/types_seven_dof_expmap.cpp.o.d"
   "CMakeFiles/g2o.dir/g2o/types/types_six_dof_expmap.cpp.o"
   "CMakeFiles/g2o.dir/g2o/types/types_six_dof_expmap.cpp.o.d"
+  "libg2o.a"
+  "libg2o.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

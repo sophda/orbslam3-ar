@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/lib/libDBoW2.pdb"
-  "/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/lib/libDBoW2.so"
   "CMakeFiles/DBoW2.dir/DBoW2/BowVector.cpp.o"
   "CMakeFiles/DBoW2.dir/DBoW2/BowVector.cpp.o.d"
   "CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o"
@@ -13,6 +11,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/DBoW2.dir/DUtils/Random.cpp.o.d"
   "CMakeFiles/DBoW2.dir/DUtils/Timestamp.cpp.o"
   "CMakeFiles/DBoW2.dir/DUtils/Timestamp.cpp.o.d"
+  "libDBoW2.a"
+  "libDBoW2.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

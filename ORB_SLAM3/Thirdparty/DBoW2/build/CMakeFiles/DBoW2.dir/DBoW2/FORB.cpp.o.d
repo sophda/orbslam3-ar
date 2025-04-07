@@ -1,4 +1,4 @@
-CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
+/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/build/CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
   /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/DBoW2/FORB.cpp \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/vector \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/__config \
@@ -6,7 +6,6 @@ CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/cdefs.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/versioning.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/api-level.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/get_device_api_level_inlines.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/ndk-version.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/pthread.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/iosfwd \
@@ -25,20 +24,20 @@ CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdint.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/wchar_limits.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/types.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/types.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/types.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/int-ll64.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/bitsperlong.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/bitsperlong.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/bitsperlong.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/posix_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/stddef.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/compiler_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/compiler.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/posix_types.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/posix_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/posix_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/pthread_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/stdarg.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/seek_constants.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/struct_file.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/fortify/stdio.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/time.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/time.h \
@@ -46,7 +45,8 @@ CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/time_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/select.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/signal.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/sigcontext.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/sigcontext.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/sve_context.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/signal_types.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/limits.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/limits.h \
@@ -56,28 +56,16 @@ CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/limits.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/posix_limits.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/signal.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/signal.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/signal.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/signal.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/signal-defs.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/siginfo.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/siginfo.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/siginfo.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/timespec.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/ucontext.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/user.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/legacy_signal_inlines.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arm-linux-androideabi/asm/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/errno.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/errno-base.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/legacy_errno_inlines.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/string.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/string.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/xlocale.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/strcasecmp.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/strings.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/fortify/strings.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/fortify/string.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/mbstate_t.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/wctype.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/__bit_reference \
@@ -91,6 +79,12 @@ CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/algorithm \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/initializer_list \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/cstring \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/string.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/string.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/strcasecmp.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/strings.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/fortify/strings.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/fortify/string.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/utility \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/__tuple \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/cstdint \
@@ -120,6 +114,13 @@ CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/ctime \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/ratio \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/climits \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android/asm/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/errno.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/asm-generic/errno-base.h \
+  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/legacy_errno_inlines.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sched.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/sched.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/semaphore.h \
@@ -151,7 +152,6 @@ CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include/locale.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/locale.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/support/android/locale_bionic.h \
-  /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/support/xlocale/__posix_l_fallback.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/streambuf \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/locale \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/cstdarg \
@@ -159,39 +159,39 @@ CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o: \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/bitset \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/istream \
   /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/DBoW2/FORB.h \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/core.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/cvdef.h \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/version.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/hal/interface.h \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/cv_cpu_dispatch.h \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/core.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/cvdef.h \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/version.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/hal/interface.h \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/cv_cpu_dispatch.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/14.0.7/include/arm_neon.h \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/array \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/base.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/opencv_modules.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/cvstd.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/base.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/opencv_modules.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/cvstd.hpp \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/cmath \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/ptr.inl.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/neon_utils.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/vsx_utils.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/ptr.inl.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/neon_utils.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/vsx_utils.hpp \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/assert.h \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/check.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/traits.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/matx.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/saturate.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/fast_math.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/types.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/check.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/traits.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/matx.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/saturate.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/fast_math.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/types.hpp \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/cfloat \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/mat.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/bufferpool.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/mat.inl.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/persistence.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/operations.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/cvstd.inl.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/mat.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/bufferpool.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/mat.inl.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/persistence.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/operations.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/cvstd.inl.hpp \
   /home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/complex \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/utility.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/core_c.h \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/types_c.h \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/optim.hpp \
-  /home/sophda/src/opencv-3.4.16/build/install/sdk/native/jni/include/opencv2/core/ovx.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/utility.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/core_c.h \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/types_c.h \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/optim.hpp \
+  /home/sophda/src/opencv-3.4.16/armv8_build/install/sdk/native/jni/include/opencv2/core/ovx.hpp \
   /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/DBoW2/DBoW2/FClass.h
