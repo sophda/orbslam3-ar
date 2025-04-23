@@ -18,6 +18,8 @@
 #include "opencv2/core/hal/interface.h"
 #include "opencv2/core/mat.hpp"
 #include "sophus/se3.hpp"
+#include <opencv2/core/eigen.hpp>
+
 using namespace std;
 using namespace cv;
 // using namespace ORB_SLAM3;
@@ -65,11 +67,22 @@ extern "C"
 // ORB_SLAM3::System SLAM(voc_file,settings_file,ORB_SLAM3::System::MONOCULAR);
 // ORB_SLAM3::Map *activeMap ;
 
-std::shared_ptr<PoseMerge > poseMerge = std::make_shared<PoseMerge >(voc_file, settings_file,"");
+std::unique_ptr<PoseMerge > kposeMerge ;
+// std::shared_ptr<ORB_SLAM3::System > kslam;
 
 Sophus::SE3f tcw; 
 Mat img_glob;
 Mat R_,R_T;
+
+extern "C"
+{
+    void init_pose() {
+        // kslam = std::make_shared<ORB_SLAM3::System>(voc_file,settings_file,ORB_SLAM3::System::IMU_MONOCULAR);
+        // kslam = std::shared_ptr<ORB_SLAM3::System>(new ORB_SLAM3::System(voc_file,settings_file,ORB_SLAM3::System::IMU_MONOCULAR));
+        kposeMerge = std::make_unique<PoseMerge>(voc_file,settings_file,"ABC");
+        kposeMerge->imuStart();
+    }
+};
 
 extern "C"
 {
@@ -87,23 +100,6 @@ extern "C"
         transpose(img_rec,img_right);
         rotate(img_right,img_right,ROTATE_90_CLOCKWISE);
         flip(img_right,img_right,-1);
-        // if(!savevideoinit)
-        // {
-        //     videoout.open("/storage/emulated/0/4DAR/map.avi",coder,30,cv::Size(640,480));
-
-        //     savevideoinit=true;
-
-        // }
-        // if(savevideo)
-        // {
-        //     videoout.write(img_right);
-        //     // string ss = std::to_string(timestamp);
-        //     // Log(ss);
-        // }
-        // else
-        // {
-        //     videoout.release();
-        // }
 
         Mat img_gray;
         cvtColor(img_right,img_gray,CV_RGBA2GRAY);
@@ -111,35 +107,11 @@ extern "C"
         img_glob = img_right;
         
 
-        poseMerge->putImg(img_gray, timestamp);
-        Eigen::Matrix4f twc = poseMerge->getPose();
-        Mat twc_mat = Mat(3,3,CV_32FC1, twc.data());
+        kposeMerge->putImg(img_gray, timestamp);
+        Eigen::Matrix4f twc = kposeMerge->getPose();
+        Mat twc_mat;
+        cv::eigen2cv(twc,twc_mat);
         // R_ = Mat(3,3,CV_32FC1,tcw.rotationMatrix().data());
-
-        // Sophus::SE3f twc = tcw.inverse();
-        
-        Mat slam_r,slam_t,twc_t;
-        // R.rowRange(0,3).colRange(0,3).copyTo(r);
-        // R.colRange(0,3).col(3).copyTo(t);
-        // slam_r = -R.rowRange(0,2).
-        Mat se_translation(3,1,CV_32FC1, tcw.translation().data());
-
-        Mat twc_translation(3,1,CV_32FC1,twc.data());
-        // hhh rowRange是左闭右开捏
-        // 3*3的旋转矩阵×3*1的平移矩阵，得到世界坐标下的相机位置
-        // slam_t = -R.rowRange(0,3).colRange(0,3).t()*se_translation;
-        slam_t = se_translation;
-
-        R_T = R_.t();
-        // twc_t 是一个3*1向量
-        // twc_t = -R_T*slam_t;
-        twc_t = twc_translation;
-
-        // string ss = std::to_string(twc_t.at<float>(0,0))+
-        //             std::to_string(twc_t.at<float>(1,0))+
-        //             std::to_string(twc_t.at<float>(2,0));
-        // Log(ss);
-        // 
 
         R[0] = twc_mat.at<float>(0,0);
         R[1] = twc_mat.at<float>(1,0);
@@ -150,13 +122,10 @@ extern "C"
         R[6] = twc_mat.at<float>(0,2);
         R[7] = twc_mat.at<float>(1,2);
         R[8] = twc_mat.at<float>(2,2);
-        T[0] = twc_t.at<float>(0,0);
-        T[1] = twc_t.at<float>(1,0);
-        T[2] = twc_t.at<float>(2,0);
-        
-        T[3] = slam_t.at<float>(0,0);
-        T[4] = slam_t.at<float>(1,0);
-        T[5] = slam_t.at<float>(2,0);
+
+        T[0] = twc_mat.at<float>(0,3);
+        T[1] = twc_mat.at<float>(1,3);
+        T[2] = twc_mat.at<float>(2,3);
         
     }
 }

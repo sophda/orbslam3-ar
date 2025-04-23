@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <memory>
 #include <utility>
+#include <vector>
 
 // #if defined (ANDROID)
 ASensorEventQueue *PoseMerge::accelerometerEventQueue = nullptr;
@@ -16,17 +17,31 @@ ASensorEventQueue *PoseMerge::gyroscopeEventQueue = nullptr;
 // 新建一个静态instance实例，在初始化前别乱☞
 PoseMerge* PoseMerge::instance_ = nullptr;
 
+PoseMerge::PoseMerge() {
+    this->instance_ = this;
+    imuMeas_.reserve(5000);
+
+}
+
 PoseMerge::PoseMerge(std::shared_ptr<ORB_SLAM3::System> orbsys){
-    this->orbsys_ = orbsys;
 
     this->instance_ = this;
+    this->orbsys_ = orbsys;
+    imuMeas_.reserve(5000);
+
+    
 };
 
 PoseMerge::PoseMerge(std::string vocbin, std::string yaml, std::string ace_model_path) {
-    this->orbsys_ = std::make_shared<ORB_SLAM3::System>(std::move(vocbin), std::move(yaml), 
-                                                        ORB_SLAM3::System::IMU_MONOCULAR);
 
     this->instance_ = this;
+    LOGI("create instance");
+
+    this->orbsys_ = std::make_shared<ORB_SLAM3::System>(vocbin, yaml, 
+                                                        ORB_SLAM3::System::IMU_MONOCULAR);
+    LOGI("create slam");
+
+    imuMeas_.reserve(5000);
 
 };
 
@@ -178,14 +193,24 @@ int PoseMerge::process_imu_sensor_events(int fd, int events, void *data) {
 }
 // #endif
 
+// std::vector<ORB_SLAM3::IMU::Point> PoseMerge::getMeasIMU() {
+//     std::vector<ORB_SLAM3::IMU::Point > tmp;
+//     for (auto iter : ) {
+    
+//     }
+// };
+
 void PoseMerge::recvImu(std::shared_ptr<IMU_MSG> imu_Msg) {
+    LOGI("GET IMU DATA： %f %f %f %f %f %f",imu_Msg->acc.x(), imu_Msg->acc.y(), imu_Msg->acc.z(),
+    imu_Msg->gyr.x(), imu_Msg->gyr.y(), imu_Msg->gyr.z());
+    mtx_MeasVec.lock();
     this->imuMeas_.push_back( ORB_SLAM3::IMU::Point(
         imu_Msg->acc.x(), imu_Msg->acc.y(), imu_Msg->acc.z(),
         imu_Msg->gyr.x(), imu_Msg->gyr.y(), imu_Msg->gyr.z(),
         imu_Msg->header
     )
-
     );
+    mtx_MeasVec.unlock();
 };
 
 bool PoseMerge::alinTimestamp(double timestamp) {
@@ -194,16 +219,30 @@ bool PoseMerge::alinTimestamp(double timestamp) {
     if (!this->balinTimestamp_) {
         balinTimestamp_ = true;
         timeGap_ = imu_timestamp_ - timestamp; // 假设imu的时间戳更大，也就是图片时间戳要加上这个时间戳才是imu同步的情况
-        imuMeas_.clear(); // 
+
+        mtx_MeasVec.lock();
+        imuMeas_.clear(); //
+        mtx_MeasVec.unlock();
     }
     return balinTimestamp_;
 };
 
 void PoseMerge::putImg(cv::Mat& img, double timestamp) {
     if(alinTimestamp(timestamp)) {
-        auto tcw = orbsys_->TrackMonocular(img, timestamp + timeGap_, imuMeas_);
+        std::vector<ORB_SLAM3::IMU::Point> tmpIMU;
+        tmpIMU.reserve(5000);
+
+        mtx_MeasVec.lock();
+
+        tmpIMU.swap(imuMeas_);
+        LOGI("imu buf size:%d ",tmpIMU.size());
+        mtx_MeasVec.unlock();
+        if (tmpIMU.empty()) {
+            return;
+        }
+        auto tcw = orbsys_->TrackMonocular(img, timestamp + timeGap_, tmpIMU);
         auto twc = tcw.inverse();
         curORB_ = twc.matrix();
-        imuMeas_.clear();
+
     }
 };
