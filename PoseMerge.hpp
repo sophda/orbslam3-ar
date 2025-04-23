@@ -8,6 +8,7 @@
 #include "opencv2/core/types.hpp"
 #include <map>
 #include <memory>
+#include <mutex>
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
 #include <vector>
@@ -39,7 +40,7 @@ struct IMU_MSG {
 
 class PoseMerge{
 public:
-    PoseMerge() = default;
+    PoseMerge();
     
     PoseMerge(std::shared_ptr<ORB_SLAM3::System> orbsys);
 
@@ -50,6 +51,8 @@ public:
     void alinOrbAce(std::map<double, Transform> Torb, std::map<double, Transform> Tace);
 
     Eigen::Matrix4f getPose();
+
+    void imuStart();
 
     std::vector<IMU_MSG > gyro_buf;
 
@@ -64,7 +67,7 @@ private:
 
     std::vector<ORB_SLAM3::IMU::Point> imuMeas_;
 
-    void imuStart();
+
 
 // 获取imu数据
 private:
@@ -72,6 +75,7 @@ private:
     int imu_prepare = 0;
     shared_ptr<IMU_MSG> cur_acc = shared_ptr<IMU_MSG>(
         new IMU_MSG());
+    std::mutex mtx_MeasVec;
     double timeGap_=0;
     
     // #if defined (ANDROID)
@@ -87,6 +91,8 @@ private:
     void recvImu(std::shared_ptr<IMU_MSG> imu_Msg);
     
     bool alinTimestamp(double timestamp);
+
+    std::vector<ORB_SLAM3::IMU::Point> getMeasIMU();
 
 
 
