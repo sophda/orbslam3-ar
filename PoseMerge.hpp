@@ -12,7 +12,7 @@
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
 #include <vector>
-
+#include "ThreadSafeQueue.hpp"
 // #if defined (ANDROID)
 // android IMU sensor
 #include <android/looper.h>
@@ -58,6 +58,8 @@ public:
 
 // orb
 private:
+    
+
     std::string ace_model_path_;
     static PoseMerge* instance_;
     bool bskipImg_=true, balinTimestamp_=false; 
