@@ -5,6 +5,7 @@
 #include "opencv2/core/mat.hpp"
 #include <cstddef>
 #include <memory>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -45,7 +46,59 @@ PoseMerge::PoseMerge(std::string vocbin, std::string yaml, std::string ace_model
 
 };
 
-Eigen::Matrix4f PoseMerge::getPose() {
+void PoseMerge::start() {
+    th_slam = std::thread(&PoseMerge::process,this);
+};
+
+void PoseMerge::process() {
+    while (1) {
+        cv::Mat img; int timestamp = 0;
+        std::vector<ORB_SLAM3::IMU::Point> imu_vec;
+        imu_vec.reserve(5000);
+
+        if(getM(img, timestamp, imu_vec)) {
+            auto tcw = orbsys_->TrackMonocular(img, timestamp, imu_vec);
+            auto twc = tcw.inverse();
+            curORB_ = twc.matrix();
+            LOGI("SLAM TWC: %f, %f, %f", curORB_(0,0),curORB_(0,1),curORB_(0,2));       
+        }
+    }
+};
+
+bool PoseMerge::getM(cv::Mat& img, int& timestamp, std::vector<ORB_SLAM3::IMU::Point>& imu_vec) {
+
+    if (img_queue_.is_empty()) {
+        return false;
+    }
+
+    if (imu_queue_.back()->t < img_queue_.front()->t) {
+        // 等待 imu 数据
+        return false;
+    }
+    if (imu_queue_.front()->t > img_queue_.back()->t) {
+        // 等待 img 数据
+        return false;
+    }
+    if (img_queue_.front()->t < imu_queue_.front()->t) {
+        // 图像的front和下一个之间有空缺的imu，所以舍弃第一张图片
+        img_queue_.pop();
+    }
+    std::shared_ptr<IMG_MSG> img_ptr = img_queue_.wait_and_pop();
+    timestamp = img_ptr->t;
+    img = img_ptr->img.clone();
+    while (imu_queue_.front()->t < img_ptr->t) {
+        // std::shared_ptr<ORB_SLAM3::IMU::Point> imu_ptr = imu_queue_.wait_and_pop();
+        // imu_vec.emplace_back(
+        //     imu_ptr->a.x(),imu_ptr->a.y(),imu_ptr->a.z(),
+        //     imu_ptr->w.x(),imu_ptr->w.y(),imu_ptr->w.z(),
+        //     imu_ptr->t);
+        imu_vec.push_back(*(imu_queue_.wait_and_pop()));
+    }
+    return true;
+
+};
+
+Eigen::Matrix4f PoseMerge::getPose() const {
     return this -> curORB_;
 };
 
@@ -169,11 +222,29 @@ int PoseMerge::process_imu_sensor_events(int fd, int events, void *data) {
         }
 
 
-        //interpolation
-         std::shared_ptr<IMU_MSG > imu_msg(new IMU_MSG());
+//         //interpolation
+        //  std::shared_ptr<IMU_MSG> imu_msg(new IMU_MSG());
+// //        LOGI("instance->cur_acc->header: \t\t%lf \ninstance->gyro_buf[0].header: \t%lf \ninstance->gyro_buf[1].header: \t%lf", instance->cur_acc->header, instance->gyro_buf[0].header, instance->gyro_buf[1].header);
+//         if (instance_->cur_acc->header >= instance_->gyro_buf[0].header &&
+//             instance_->cur_acc->header < instance_->gyro_buf[1].header) {
+//             imu_msg->t = instance_->cur_acc->header;
+// //            imu_msg->header = (double)cv::getTickCount() / cv::getTickFrequency();
+//             imu_msg->acc = instance_->cur_acc->acc;
+//             imu_msg->gyr = instance_->gyro_buf[0].gyr +
+//                            (instance_->gyro_buf[1].gyr - instance_->gyro_buf[0].gyr) *
+//                            (instance_->cur_acc->header - instance_->gyro_buf[0].header) /
+//                            (instance_->gyro_buf[1].header - instance_->gyro_buf[0].header);
+//         } else {
+//             LOGE("imu error %lf %lf %lf\n", instance_->gyro_buf[0].header, instance_->cur_acc->header,
+//                  instance_->gyro_buf[1].header);
+//             continue;
+//         }
+
+                //interpolation
 //        LOGI("instance->cur_acc->header: \t\t%lf \ninstance->gyro_buf[0].header: \t%lf \ninstance->gyro_buf[1].header: \t%lf", instance->cur_acc->header, instance->gyro_buf[0].header, instance->gyro_buf[1].header);
         if (instance_->cur_acc->header >= instance_->gyro_buf[0].header &&
             instance_->cur_acc->header < instance_->gyro_buf[1].header) {
+            std::shared_ptr<IMU_MSG> imu_msg(new IMU_MSG());
             imu_msg->header = instance_->cur_acc->header;
 //            imu_msg->header = (double)cv::getTickCount() / cv::getTickFrequency();
             imu_msg->acc = instance_->cur_acc->acc;
@@ -181,13 +252,23 @@ int PoseMerge::process_imu_sensor_events(int fd, int events, void *data) {
                            (instance_->gyro_buf[1].gyr - instance_->gyro_buf[0].gyr) *
                            (instance_->cur_acc->header - instance_->gyro_buf[0].header) /
                            (instance_->gyro_buf[1].header - instance_->gyro_buf[0].header);
+
+            std::shared_ptr<ORB_SLAM3::IMU::Point > slam_imu_msg(new ORB_SLAM3::IMU::Point(
+                imu_msg->acc.x(),imu_msg->acc.y(),imu_msg->acc.z(),
+                imu_msg->gyr.x(),imu_msg->gyr.y(),imu_msg->gyr.z(),
+                imu_msg->header));
+            
+            instance_->recvImu(slam_imu_msg);
+
+
         } else {
             LOGE("imu error %lf %lf %lf\n", instance_->gyro_buf[0].header, instance_->cur_acc->header,
                  instance_->gyro_buf[1].header);
             continue;
         }
 
-        instance_->recvImu(imu_msg);
+
+
     }
     return 1;
 }
@@ -200,17 +281,21 @@ int PoseMerge::process_imu_sensor_events(int fd, int events, void *data) {
 //     }
 // };
 
-void PoseMerge::recvImu(std::shared_ptr<IMU_MSG> imu_Msg) {
-    LOGI("GET IMU DATA： %f %f %f %f %f %f",imu_Msg->acc.x(), imu_Msg->acc.y(), imu_Msg->acc.z(),
-    imu_Msg->gyr.x(), imu_Msg->gyr.y(), imu_Msg->gyr.z());
-    mtx_MeasVec.lock();
-    this->imuMeas_.push_back( ORB_SLAM3::IMU::Point(
-        imu_Msg->acc.x(), imu_Msg->acc.y(), imu_Msg->acc.z(),
-        imu_Msg->gyr.x(), imu_Msg->gyr.y(), imu_Msg->gyr.z(),
-        imu_Msg->header
-    )
-    );
-    mtx_MeasVec.unlock();
+void PoseMerge::recvImu(std::shared_ptr<ORB_SLAM3::IMU::Point> imu_Msg) {
+    LOGI("GET IMU DATA： %f %f %f %f %f %f",imu_Msg->a.x(), imu_Msg->a.y(), imu_Msg->a.z(),
+    imu_Msg->w.x(), imu_Msg->w.y(), imu_Msg->w.z());
+
+    // mtx_MeasVec.lock();
+    // this->imuMeas_.push_back( ORB_SLAM3::IMU::Point(
+    //     imu_Msg->acc.x(), imu_Msg->acc.y(), imu_Msg->acc.z(),
+    //     imu_Msg->gyr.x(), imu_Msg->gyr.y(), imu_Msg->gyr.z(),
+    //     imu_Msg->header
+    // )
+    // );
+    // mtx_MeasVec.unlock();
+
+    imu_queue_.push(imu_Msg);
+
 };
 
 bool PoseMerge::alinTimestamp(double timestamp) {
@@ -220,29 +305,35 @@ bool PoseMerge::alinTimestamp(double timestamp) {
         balinTimestamp_ = true;
         timeGap_ = imu_timestamp_ - timestamp; // 假设imu的时间戳更大，也就是图片时间戳要加上这个时间戳才是imu同步的情况
 
-        mtx_MeasVec.lock();
-        imuMeas_.clear(); //
-        mtx_MeasVec.unlock();
+        // mtx_MeasVec.lock();
+        // imuMeas_.clear(); //
+        // mtx_MeasVec.unlock();
     }
     return balinTimestamp_;
 };
 
 void PoseMerge::putImg(cv::Mat& img, double timestamp) {
     if(alinTimestamp(timestamp)) {
-        std::vector<ORB_SLAM3::IMU::Point> tmpIMU;
-        tmpIMU.reserve(5000);
+        // std::vector<ORB_SLAM3::IMU::Point> tmpIMU;
+        // tmpIMU.reserve(5000);
 
-        mtx_MeasVec.lock();
+        // mtx_MeasVec.lock();
 
-        tmpIMU.swap(imuMeas_);
-        LOGI("imu buf size:%d ",tmpIMU.size());
-        mtx_MeasVec.unlock();
-        if (tmpIMU.empty()) {
-            return;
-        }
-        auto tcw = orbsys_->TrackMonocular(img, timestamp + timeGap_, tmpIMU);
-        auto twc = tcw.inverse();
-        curORB_ = twc.matrix();
+        // tmpIMU.swap(imuMeas_);
+        // LOGI("imu buf size:%d ",tmpIMU.size());
+        // mtx_MeasVec.unlock();
+        // if (tmpIMU.empty()) {
+        //     return;
+        // }
+        // auto tcw = orbsys_->TrackMonocular(img, timestamp + timeGap_, tmpIMU);
+        // auto twc = tcw.inverse();
+        // curORB_ = twc.matrix();
+
+        std::shared_ptr<IMG_MSG> img_temp = std::make_shared<IMG_MSG>();
+        img_temp->t = timestamp+timeGap_;
+        img_temp->img = img;
+        img_queue_.push(img_temp);
+
 
     }
 };

@@ -6,6 +6,7 @@
 #define SAFEQUEUE_THREADSAFEQUEUE_H
 #include <iostream>
 //#include <deque>
+#include <memory>
 #include <mutex>
 #include <condition_variable>
 #include <queue>
@@ -15,7 +16,7 @@ class SafeQueue {
 
 private:
     mutable std::mutex mutex_;
-    std::queue<std::shared_ptr<T > > queue_;
+    std::queue<std::shared_ptr<T>> queue_;
     std::condition_variable cond_;
 
 public:
@@ -33,13 +34,28 @@ public:
         cond_.notify_one();
     };
 
+    std::shared_ptr<T> front() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        return (queue_.front());
+    }
+
+    std::shared_ptr<T> back() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        return queue_.back();
+    }
+
     std::shared_ptr<T> wait_and_pop(){
-        std::unique_lock<std::mutex > lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex_);
         cond_.wait(lock, [this](){return !queue_.empty();});
         std::shared_ptr<T > temp = queue_.front();
         queue_.pop();
         return temp;
     };
+
+    void pop() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        queue_.pop();
+    }
 
 };
 

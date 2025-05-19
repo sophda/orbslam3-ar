@@ -1,6 +1,9 @@
 // #include "System.h"
+#include <cstring>
 #include <future>
 #include <memory>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 #include "PoseMerge.hpp"
 #include "boost/version.hpp"
@@ -15,6 +18,7 @@
 #include "System.h"
 #include "Atlas.h"
 #include "Map.h"
+#include "ndkcamera.hpp"
 #include "opencv2/core/hal/interface.h"
 #include "opencv2/core/mat.hpp"
 #include "sophus/se3.hpp"
@@ -67,12 +71,48 @@ extern "C"
 // ORB_SLAM3::System SLAM(voc_file,settings_file,ORB_SLAM3::System::MONOCULAR);
 // ORB_SLAM3::Map *activeMap ;
 
-std::unique_ptr<PoseMerge > kposeMerge ;
+std::unique_ptr<PoseMerge> kposeMerge ;
 // std::shared_ptr<ORB_SLAM3::System > kslam;
 
 Sophus::SE3f tcw; 
 Mat img_glob;
 Mat R_,R_T;
+std::unique_ptr<Camera> ndkcam = std::make_unique<Camera>();
+;
+
+extern "C" {
+    // void ndkcam_init() {
+    // }
+
+    void ndkcam_start() {
+        ndkcam->startCamera();
+
+    }
+
+    void ndkcam_saveimg() {
+        cv::Mat temp_img;
+        ndkcam->getimg(temp_img);
+        cv::imwrite("/storage/emulated/0/4DAR/ndk.jpg", temp_img);
+
+    }
+
+    bool ndkcam_getimg(unsigned char*& data, int& size) {
+        cv::Mat temp_img, dst_img;
+        ndkcam->getimg(temp_img);
+        cv::cvtColor(temp_img, dst_img, cv::COLOR_RGB2RGBA);
+
+        // data = dst_img.data;
+        size = dst_img.cols*dst_img.rows*dst_img.channels();
+
+        uchar* result = new uchar[dst_img.cols*dst_img.rows*4];
+        memcpy(result, dst_img.data, dst_img.total()*sizeof(uchar)*4);
+        data = result;
+        return true;
+
+    }
+
+}
+
 
 extern "C"
 {
@@ -81,6 +121,7 @@ extern "C"
         // kslam = std::shared_ptr<ORB_SLAM3::System>(new ORB_SLAM3::System(voc_file,settings_file,ORB_SLAM3::System::IMU_MONOCULAR));
         kposeMerge = std::make_unique<PoseMerge>(voc_file,settings_file,"ABC");
         kposeMerge->imuStart();
+        kposeMerge->start();
     }
 };
 
