@@ -1,3 +1,0 @@
-/home/sophda/project/OrbSlam3AR/test_static/build/CMakeFiles/test.dir
-/home/sophda/project/OrbSlam3AR/test_static/build/CMakeFiles/edit_cache.dir
-/home/sophda/project/OrbSlam3AR/test_static/build/CMakeFiles/rebuild_cache.dir

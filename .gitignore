@@ -1,3 +1,7 @@
-*.o
-*.so
-*.tar.gz
+build
+arm64_build
+ORB_SLAM3/arm_build
+ORB_SLAM3/build
+ORB_SLAM3/Thirdparty/DBoW2/armv8a_build
+ORB_SLAM3/Thirdparty/g2o/armv8a_build
+ORB_SLAM3/Thirdparty/boost_1_82_0

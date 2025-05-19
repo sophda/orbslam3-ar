@@ -58,7 +58,7 @@ if(BUILD_ANDROID)
 endif()
 
 
-add_library(${PROJECT_NAME} SHARED native.cpp  PoseMerge.hpp PoseMerge.cpp )
+add_library(${PROJECT_NAME} SHARED native.cpp  PoseMerge.hpp PoseMerge.cpp ndkcamera.cpp ndkcamera.hpp )
 target_link_libraries(
     ${PROJECT_NAME} 
     ORB_SLAM3
@@ -68,4 +68,6 @@ target_link_libraries(
     libboost_atomic-clang-mt-a64-1_82.a
     libboost_serialization-clang-mt-a64-1_82.a
     libboost_system-clang-mt-a64-1_82.a
+    mediandk
+    camera2ndk
 )

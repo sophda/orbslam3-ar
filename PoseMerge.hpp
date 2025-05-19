@@ -4,13 +4,16 @@
 
 // #include "Eigen/Core/Matrix.h"
 #include "ImuTypes.h"
+#include "MapPoint.h"
 #include "System.h"
 #include "opencv2/core/types.hpp"
 #include <map>
 #include <memory>
 #include <mutex>
+#include <opencv2/core/mat.hpp>
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
+#include <thread>
 #include <vector>
 #include "ThreadSafeQueue.hpp"
 // #if defined (ANDROID)
@@ -38,6 +41,11 @@ struct IMU_MSG {
     Eigen::Vector3d gyr;
 };
 
+struct IMG_MSG {
+    double t;
+    cv::Mat img;
+};
+
 class PoseMerge{
 public:
     PoseMerge();
@@ -50,16 +58,23 @@ public:
 
     void alinOrbAce(std::map<double, Transform> Torb, std::map<double, Transform> Tace);
 
-    Eigen::Matrix4f getPose();
+    Eigen::Matrix4f getPose() const;
 
     void imuStart();
 
+    void start();
+
+
+
+private:
     std::vector<IMU_MSG > gyro_buf;
+
+    void process();
 
 // orb
 private:
-    
 
+    std::thread th_slam;
     std::string ace_model_path_;
     static PoseMerge* instance_;
     bool bskipImg_=true, balinTimestamp_=false; 
@@ -69,6 +84,10 @@ private:
 
     std::vector<ORB_SLAM3::IMU::Point> imuMeas_;
 
+    SafeQueue<ORB_SLAM3::IMU::Point> imu_queue_;
+    SafeQueue<IMG_MSG> img_queue_;
+
+    bool getM(cv::Mat& img, int& timestamp, std::vector<ORB_SLAM3::IMU::Point>& imu_vec);
 
 
 // 获取imu数据
@@ -90,11 +109,10 @@ private:
 
     static int process_imu_sensor_events(int fd, int events, void *data);
     
-    void recvImu(std::shared_ptr<IMU_MSG> imu_Msg);
+    void recvImu(std::shared_ptr<ORB_SLAM3::IMU::Point> imu_Msg);
     
     bool alinTimestamp(double timestamp);
 
-    std::vector<ORB_SLAM3::IMU::Point> getMeasIMU();
 
 
 

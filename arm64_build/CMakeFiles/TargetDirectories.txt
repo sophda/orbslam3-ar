@@ -1,3 +1,0 @@
-/home/sophda/project/OrbSlam3AR/arm64_build/CMakeFiles/slamAR.dir
-/home/sophda/project/OrbSlam3AR/arm64_build/CMakeFiles/edit_cache.dir
-/home/sophda/project/OrbSlam3AR/arm64_build/CMakeFiles/rebuild_cache.dir
