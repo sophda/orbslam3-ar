@@ -1,2 +1,0 @@
-/home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar qc libDBoW2.a CMakeFiles/DBoW2.dir/DBoW2/BowVector.cpp.o CMakeFiles/DBoW2.dir/DBoW2/FORB.cpp.o CMakeFiles/DBoW2.dir/DBoW2/FeatureVector.cpp.o CMakeFiles/DBoW2.dir/DBoW2/ScoringObject.cpp.o CMakeFiles/DBoW2.dir/DUtils/Random.cpp.o CMakeFiles/DBoW2.dir/DUtils/Timestamp.cpp.o
-/home/sophda/src/android-ndk-r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib libDBoW2.a
