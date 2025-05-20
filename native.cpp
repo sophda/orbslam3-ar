@@ -21,6 +21,7 @@
 #include "ndkcamera.hpp"
 #include "opencv2/core/hal/interface.h"
 #include "opencv2/core/mat.hpp"
+#include "opencv2/imgproc/types_c.h"
 #include "sophus/se3.hpp"
 #include <opencv2/core/eigen.hpp>
 
@@ -80,6 +81,14 @@ Mat R_,R_T;
 std::unique_ptr<Camera> ndkcam = std::make_unique<Camera>();
 ;
 
+struct Color32
+{
+    uchar red;
+    uchar green;
+    uchar blue;
+    uchar alpha;
+};
+
 extern "C" {
     // void ndkcam_init() {
     // }
@@ -96,18 +105,22 @@ extern "C" {
 
     }
 
-    bool ndkcam_getimg(unsigned char*& data, int& size) {
-        cv::Mat temp_img, dst_img;
+    uchar* ndkcam_getimg(int& size) {
+        cv::Mat temp_img;
         ndkcam->getimg(temp_img);
-        cv::cvtColor(temp_img, dst_img, cv::COLOR_RGB2RGBA);
 
-        // data = dst_img.data;
-        size = dst_img.cols*dst_img.rows*dst_img.channels();
+        cv::cvtColor(temp_img, temp_img, cv::COLOR_BGR2RGBA);
+        
+        uchar* data = new uchar[1280*720*4];
+        size = temp_img.cols * temp_img.rows * temp_img.channels();
+        memcpy(data, temp_img.data, temp_img.total()*sizeof(uchar)*4);
 
-        uchar* result = new uchar[dst_img.cols*dst_img.rows*4];
-        memcpy(result, dst_img.data, dst_img.total()*sizeof(uchar)*4);
-        data = result;
-        return true;
+
+        // cv::Mat dst(720,1280,CV_8UC4, *data);
+        // dst = temp_img.clone();
+        // size = 666;
+
+        return data;
 
     }
 
