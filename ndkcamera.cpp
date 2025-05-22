@@ -9,6 +9,11 @@ Camera::Camera() {
     this->caminstance_ = this;
 }
 
+Camera::Camera(std::shared_ptr<PoseMerge> posemerge) {
+    this->caminstance_ = this;
+    this->posemerge_ = posemerge;
+}
+
 void Camera::onImageAvailable(void* context, AImageReader* reader) {
     AImage* image = nullptr;
     media_status_t mStatus = AImageReader_acquireNextImage(reader, &image);
@@ -56,6 +61,11 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
             // // LOGI(...)
             // LOGI("---NDK CAM:rows:%d, cols:%d",_yuv_rgb_img.rows, _yuv_rgb_img.cols);
 // ===========================================================================================
+            int64_t image_timestamp;
+            AImage_getTimestamp(image, &image_timestamp);
+            LOGI("NDK CAM TIMESTAMP:%d",image_timestamp);
+
+            
             uint8_t *yBuffer, *uBuffer, *vBuffer;
             int yRowStride, uRowStride, vRowStride;
             int yPixelStride, uPixelStride, vPixelStride;
@@ -124,6 +134,9 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
 
 
             caminstance_->setimg(rgb_mat);
+            if (caminstance_->posemerge_!=nullptr) {
+                caminstance_->posemerge_->putImg(rgb_mat.clone(), static_cast<double>(image_timestamp));
+            }
 
             AImage_delete(image);
 
@@ -134,7 +147,7 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
 };
 
 void Camera::setimg(const cv::Mat& callback_img) {
-    std::unique_lock<std::mutex> lock(mtx_img);
+    std::unique_lock<std::mutex> lock(this->mtx_img);
     this->img = callback_img.clone();
 }
 
@@ -236,7 +249,7 @@ void Camera::startCamera() {
 
     // 打开摄像头并且读取image
     //camera的参数自己定制
-    if (openCamera(cameraId) && createImageReader(img_heigth , img_width, AIMAGE_FORMAT_YUV_420_888, 1)){
+    if (openCamera(cameraId) && createImageReader(img_width , img_heigth, AIMAGE_FORMAT_YUV_420_888, 1)){
         // 创建一个输出的目标
         ACameraOutputTarget_create(nativeWindow, &cameraOutputTarget);
         // 创建捕获请求和捕获会话

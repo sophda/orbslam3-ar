@@ -3,6 +3,8 @@
 
 #include "PoseMerge.hpp"
 #include <cstddef>
+#include <future>
+#include <memory>
 #include <opencv2/core/mat.hpp>
 #include <utility>
 #include <queue>
@@ -24,12 +26,12 @@
 class Camera {
 public:
     Camera() ;
-    Camera(PoseMerge *posemerge):posemerge_(posemerge){};
+    Camera(std::shared_ptr<PoseMerge> posemerge);
     
 private:
-    int img_heigth=1280,img_width=720;
+    int img_heigth=720,img_width=1280;
     std::mutex mtx_img;
-    PoseMerge *posemerge_ = nullptr;
+    std::shared_ptr<PoseMerge> posemerge_=nullptr;
     static Camera* caminstance_;
     cv::Mat img;
     ACameraManager* cameraManager = nullptr;

@@ -3,6 +3,7 @@
 #include "ImuTypes.h"
 #include "System.h"
 #include "opencv2/core/mat.hpp"
+#include <cmath>
 #include <cstddef>
 #include <memory>
 #include <thread>
@@ -21,6 +22,7 @@ PoseMerge* PoseMerge::instance_ = nullptr;
 PoseMerge::PoseMerge() {
     this->instance_ = this;
     imuMeas_.reserve(5000);
+    record_flag = true;
 
 }
 
@@ -29,6 +31,8 @@ PoseMerge::PoseMerge(std::shared_ptr<ORB_SLAM3::System> orbsys){
     this->instance_ = this;
     this->orbsys_ = orbsys;
     imuMeas_.reserve(5000);
+    record_flag = true;
+
 
     
 };
@@ -43,16 +47,20 @@ PoseMerge::PoseMerge(std::string vocbin, std::string yaml, std::string ace_model
     LOGI("create slam");
 
     imuMeas_.reserve(5000);
-
+    record_flag = true;
 };
 
 void PoseMerge::start() {
     th_slam = std::thread(&PoseMerge::process,this);
 };
 
+void PoseMerge::start_record() {
+    th_record = std::thread(&PoseMerge::process_record,this);
+}
+
 void PoseMerge::process() {
     while (1) {
-        cv::Mat img; int timestamp = 0;
+        cv::Mat img; double timestamp = 0;
         std::vector<ORB_SLAM3::IMU::Point> imu_vec;
         imu_vec.reserve(5000);
 
@@ -65,7 +73,34 @@ void PoseMerge::process() {
     }
 };
 
-bool PoseMerge::getM(cv::Mat& img, int& timestamp, std::vector<ORB_SLAM3::IMU::Point>& imu_vec) {
+void PoseMerge::process_record() {
+    out_file_img.setf(ios::fixed);
+    out_file_img.precision(5);
+
+    out_file_imu.setf(ios::fixed);
+    out_file_imu.precision(5);
+
+    while (record_flag) {
+        cv::Mat img; double img_timestamp = 0;
+        std::vector<ORB_SLAM3::IMU::Point> imu_vec;
+        imu_vec.reserve(5000);
+        if (getM(img, img_timestamp, imu_vec)) {
+            LOGI("RECORD FRAME---");
+            video_out.write(img);
+            out_file_img<<img_timestamp<<" "<<std::endl;
+            for (auto iter : imu_vec) {
+                out_file_imu<<iter.t<<" "<<iter.a.x() <<" " <<iter.a.y() << " " << iter.a.z()<< " "<<
+                                iter.w.x() <<" " <<iter.w.y() << " " << iter.w.z()<< " "<<std::endl;
+            }
+        }
+    }
+    out_file_img.close();
+    out_file_imu.close();
+    video_out.release();
+
+};
+
+bool PoseMerge::getM(cv::Mat& img, double& timestamp, std::vector<ORB_SLAM3::IMU::Point>& imu_vec) {
 
     if (img_queue_.is_empty()) {
         return false;
@@ -282,8 +317,8 @@ int PoseMerge::process_imu_sensor_events(int fd, int events, void *data) {
 // };
 
 void PoseMerge::recvImu(std::shared_ptr<ORB_SLAM3::IMU::Point> imu_Msg) {
-    LOGI("GET IMU DATA： %f %f %f %f %f %f",imu_Msg->a.x(), imu_Msg->a.y(), imu_Msg->a.z(),
-    imu_Msg->w.x(), imu_Msg->w.y(), imu_Msg->w.z());
+    // LOGI("GET IMU DATA： %f %f %f %f %f %f",imu_Msg->a.x(), imu_Msg->a.y(), imu_Msg->a.z(),
+    // imu_Msg->w.x(), imu_Msg->w.y(), imu_Msg->w.z());
 
     // mtx_MeasVec.lock();
     // this->imuMeas_.push_back( ORB_SLAM3::IMU::Point(
@@ -312,28 +347,12 @@ bool PoseMerge::alinTimestamp(double timestamp) {
     return balinTimestamp_;
 };
 
-void PoseMerge::putImg(cv::Mat& img, double timestamp) {
+void PoseMerge::putImg(cv::Mat img, double timestamp) {
     if(alinTimestamp(timestamp)) {
-        // std::vector<ORB_SLAM3::IMU::Point> tmpIMU;
-        // tmpIMU.reserve(5000);
-
-        // mtx_MeasVec.lock();
-
-        // tmpIMU.swap(imuMeas_);
-        // LOGI("imu buf size:%d ",tmpIMU.size());
-        // mtx_MeasVec.unlock();
-        // if (tmpIMU.empty()) {
-        //     return;
-        // }
-        // auto tcw = orbsys_->TrackMonocular(img, timestamp + timeGap_, tmpIMU);
-        // auto twc = tcw.inverse();
-        // curORB_ = twc.matrix();
-
+        LOGI("NEW IMAGE:%f",timestamp);
         std::shared_ptr<IMG_MSG> img_temp = std::make_shared<IMG_MSG>();
-        img_temp->t = timestamp+timeGap_;
+        img_temp->t = imu_timestamp_;
         img_temp->img = img;
         img_queue_.push(img_temp);
-
-
     }
 };
