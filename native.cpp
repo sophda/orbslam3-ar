@@ -24,6 +24,7 @@
 #include "opencv2/imgproc/types_c.h"
 #include "sophus/se3.hpp"
 #include <opencv2/core/eigen.hpp>
+#include <unistd.h>
 
 using namespace std;
 using namespace cv;
@@ -72,31 +73,47 @@ extern "C"
 // ORB_SLAM3::System SLAM(voc_file,settings_file,ORB_SLAM3::System::MONOCULAR);
 // ORB_SLAM3::Map *activeMap ;
 
-std::unique_ptr<PoseMerge> kposeMerge ;
 // std::shared_ptr<ORB_SLAM3::System > kslam;
 
 Sophus::SE3f tcw; 
 Mat img_glob;
 Mat R_,R_T;
-std::unique_ptr<Camera> ndkcam = std::make_unique<Camera>();
-;
 
-struct Color32
-{
-    uchar red;
-    uchar green;
-    uchar blue;
-    uchar alpha;
-};
+std::shared_ptr<PoseMerge> kposeMerge ;
+std::shared_ptr<Camera> ndkcam;
 
+
+// ndk camera & pose merge func
 extern "C" {
-    // void ndkcam_init() {
-    // }
 
-    void ndkcam_start() {
-        ndkcam->startCamera();
+    void init_sys() {
+
+        kposeMerge = std::make_shared<PoseMerge>(voc_file,settings_file,"ABC");
+        kposeMerge->set_out_file("/storage/emulated/0/4DAR/");
+
+        ndkcam = std::make_shared<Camera>(kposeMerge);
+        kposeMerge->imuStart();
 
     }
+
+    void start_cam_imu() {
+        // sleep(1);
+        ndkcam->startCamera();
+    }
+
+    void kpose_record() {
+        kposeMerge->start_record();
+    }
+
+    void kpose_stop_record() {
+        kposeMerge->stop_record();
+    }
+
+    void kpose_start_slam() {
+        kposeMerge->start();
+    }
+
+
 
     void ndkcam_saveimg() {
         cv::Mat temp_img;
@@ -114,30 +131,36 @@ extern "C" {
         uchar* data = new uchar[1280*720*4];
         size = temp_img.cols * temp_img.rows * temp_img.channels();
         memcpy(data, temp_img.data, temp_img.total()*sizeof(uchar)*4);
-
-
-        // cv::Mat dst(720,1280,CV_8UC4, *data);
-        // dst = temp_img.clone();
-        // size = 666;
-
         return data;
 
-    }
+    };
+
+    void getpose(float T[],float R[]) {
+        Eigen::Matrix4f twc = kposeMerge->getPose();
+        Mat twc_mat;
+        cv::eigen2cv(twc,twc_mat);
+        
+        R[0] = twc_mat.at<float>(0,0);
+        R[1] = twc_mat.at<float>(1,0);
+        R[2] = twc_mat.at<float>(2,0);
+        R[3] = twc_mat.at<float>(0,1);
+        R[4] = twc_mat.at<float>(1,1);
+        R[5] = twc_mat.at<float>(2,1);
+        R[6] = twc_mat.at<float>(0,2);
+        R[7] = twc_mat.at<float>(1,2);
+        R[8] = twc_mat.at<float>(2,2);
+
+        T[0] = twc_mat.at<float>(0,3);
+        T[1] = twc_mat.at<float>(1,3);
+        T[2] = twc_mat.at<float>(2,3);
+
+    };
 
 }
 
 
-extern "C"
-{
-    void init_pose() {
-        // kslam = std::make_shared<ORB_SLAM3::System>(voc_file,settings_file,ORB_SLAM3::System::IMU_MONOCULAR);
-        // kslam = std::shared_ptr<ORB_SLAM3::System>(new ORB_SLAM3::System(voc_file,settings_file,ORB_SLAM3::System::IMU_MONOCULAR));
-        kposeMerge = std::make_unique<PoseMerge>(voc_file,settings_file,"ABC");
-        kposeMerge->imuStart();
-        kposeMerge->start();
-    }
-};
 
+// slam using image from unity. very very slow
 extern "C"
 {
     void ProcessImage(uchar *image_data,float T[],float R[], int width, int height, double timestamp)
@@ -182,19 +205,13 @@ extern "C"
         T[2] = twc_mat.at<float>(2,3);
         
     }
-}
 
-extern "C"
-{
     void mapping()
     {
         // SLAM.change2mapping();
     }
-}
 
-extern "C"
-{
-    void SaveImage(uchar *image_data,float g_data[], int a)
+        void SaveImage(uchar *image_data,float g_data[], int a)
     {
 
         if(!savevideoinit)
@@ -248,18 +265,14 @@ extern "C"
         //     savevideo=true;
         // }
     }
-}
 
-extern "C"
-{
-    void SaveMap()
+     void SaveMap()
     {
         // SLAM.SaveAtlas(0);
     }
-}
-extern "C"
-{
-    void GetLocalMap()
+
+
+void GetLocalMap()
     {
         ofstream out ;
         out.open("/storage/emulated/0/4DAR/local.pcd");
@@ -299,10 +312,9 @@ extern "C"
         out.close();
 
     }
-}
 
-extern "C"
-{
+
+
     void FitPlane(float plane_arg[])
     {
         float a,b,c,d;
@@ -337,7 +349,42 @@ extern "C"
         plane_arg[5] = mean_y;
         plane_arg[6] = mean_z;
     }
+
+        void SlamShutDown()
+    {
+        // save atlas
+        // SLAM.Shutdown();
+    }
+
+         
+    void Relocalization(float R_[],float t_[])
+    {
+        // vector<Eigen::Vector3f> p1,p2;
+        // Eigen::Matrix3f R;
+        // Eigen::Vector3f t;
+        // ReadPcd("/storage/emulated/0/4DAR/local.pcd",p1);
+        // ReadPcd("/storage/emulated/0/4DAR/map.pcd",p2);
+        // ICP(p1,p2,R,t);
+        // R_[0] = R(0,0);
+        // R_[0] = R(1,0);
+        // R_[0] = R(2,0);
+        // R_[0] = R(0,1);
+        // R_[0] = R(1,1);
+        // R_[0] = R(2,1);
+        // R_[0] = R(0,2);
+        // R_[0] = R(1,2);
+        // R_[0] = R(2,2);
+        // t_[0] = t(0);
+        // t_[1] = t(1);
+        // t_[2] = t(2);
+
+    }
+
 }
+
+
+
+
 
 
 void ransac(vector<Point3f>& pts_3d, int max_iter, float threshold,
@@ -406,53 +453,3 @@ float &a1,float &b1,float &c1,float &d1)
     
 }
 
-//  test boost
-
-// extern "C"
-// {
-//     void GetBoost()
-//     {
-//         ofstream out_boost;
-//         out_boost.open("/storage/emulated/0/4DAR/boost.txt");
-//         out_boost <<"get:"   <<BOOST_LIB_VERSION <<endl;
-//         out_boost.close();
-
-
-//     }
-// }
-
-extern "C"
-{
-    void SlamShutDown()
-    {
-        // save atlas
-        // SLAM.Shutdown();
-    }
-}
-
-extern "C"
-{
-         
-    void Relocalization(float R_[],float t_[])
-    {
-        // vector<Eigen::Vector3f> p1,p2;
-        // Eigen::Matrix3f R;
-        // Eigen::Vector3f t;
-        // ReadPcd("/storage/emulated/0/4DAR/local.pcd",p1);
-        // ReadPcd("/storage/emulated/0/4DAR/map.pcd",p2);
-        // ICP(p1,p2,R,t);
-        // R_[0] = R(0,0);
-        // R_[0] = R(1,0);
-        // R_[0] = R(2,0);
-        // R_[0] = R(0,1);
-        // R_[0] = R(1,1);
-        // R_[0] = R(2,1);
-        // R_[0] = R(0,2);
-        // R_[0] = R(1,2);
-        // R_[0] = R(2,2);
-        // t_[0] = t(0);
-        // t_[1] = t(1);
-        // t_[2] = t(2);
-
-    }
-}
