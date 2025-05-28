@@ -82,6 +82,7 @@ Mat R_,R_T;
 std::shared_ptr<PoseMerge> kposeMerge ;
 std::shared_ptr<Camera> ndkcam;
 
+uchar* data;
 
 // ndk camera & pose merge func
 extern "C" {
@@ -93,6 +94,8 @@ extern "C" {
 
         ndkcam = std::make_shared<Camera>(kposeMerge);
         kposeMerge->imuStart();
+        kposeMerge->setCamRecordFre(2);
+        data = new uchar[1280*720*4];
 
     }
 
@@ -128,7 +131,6 @@ extern "C" {
 
         cv::cvtColor(temp_img, temp_img, cv::COLOR_BGR2RGBA);
         
-        uchar* data = new uchar[1280*720*4];
         size = temp_img.cols * temp_img.rows * temp_img.channels();
         memcpy(data, temp_img.data, temp_img.total()*sizeof(uchar)*4);
         return data;

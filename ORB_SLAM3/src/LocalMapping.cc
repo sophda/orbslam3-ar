@@ -24,8 +24,16 @@
 #include "Converter.h"
 #include "GeometricTools.h"
 
+#include <cmath>
 #include<mutex>
 #include<chrono>
+
+#include <android/log.h>
+
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, __FILE__, __VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, __FILE__, __VA_ARGS__)
+#define printf(...)  __android_log_print(ANDROID_LOG_ERROR, __FILE__, __VA_ARGS__)
+
 
 namespace ORB_SLAM3
 {
@@ -1228,17 +1236,31 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
         Eigen::Matrix3f Rwg;
         Eigen::Vector3f dirG;
         dirG.setZero();
+        int have_num = 0;
         for(vector<KeyFrame*>::iterator itKF = vpKF.begin(); itKF!=vpKF.end(); itKF++)
         {
+           
+
             if (!(*itKF)->mpImuPreintegrated)
                 continue;
             if (!(*itKF)->mPrevKF)
                 continue;
-
+            have_num++;
             dirG -= (*itKF)->mPrevKF->GetImuRotation() * (*itKF)->mpImuPreintegrated->GetUpdatedDeltaVelocity();
+            auto a = (*itKF)->mPrevKF->GetImuRotation();
+            auto b = (*itKF)->mpImuPreintegrated->GetUpdatedDeltaVelocity();
+            LOGI("iterkf-rotation:%f,%f,%f, iter-deltav:%f %f %f ",a(0,0),a(0,1),a(0,1),b(0),b(1),b(2));
             Eigen::Vector3f _vel = ((*itKF)->GetImuPosition() - (*itKF)->mPrevKF->GetImuPosition())/(*itKF)->mpImuPreintegrated->dT;
             (*itKF)->SetVelocity(_vel);
             (*itKF)->mPrevKF->SetVelocity(_vel);
+        }
+        LOGI("dirg: %f %f %f",dirG[0],dirG[1],dirG[2]);
+        if (have_num<6) {
+            LOGI("TOO FEW IMU DATA");
+            bInitializing = false;
+            mbBadImu = true;
+            return;
+            
         }
 
         dirG = dirG/dirG.norm();
@@ -1248,6 +1270,7 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
         const float cosg = gI.dot(dirG);
         const float ang = acos(cosg);
         Eigen::Vector3f vzg = v*ang/nv;
+        LOGI("dir:%f %f %f,nv:%f, v: %f, ang:%f  vzg: %f %f %f",dirG[0],dirG[1],dirG[2],nv,v[0],ang, vzg[0],vzg[1],vzg[2]);
         Rwg = Sophus::SO3f::exp(vzg).matrix();
         mRwg = Rwg.cast<double>();
         mTinit = mpCurrentKeyFrame->mTimeStamp-mFirstTs;
