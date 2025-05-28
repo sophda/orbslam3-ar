@@ -78,6 +78,7 @@ target_link_libraries(${PROJECT_NAME}
 ${OpenCV_LIBS}
 DBoW2
 g2o
+log
 boost_LIB
 libboost_atomic-clang-mt-a64-1_82.a
 libboost_serialization-clang-mt-a64-1_82.a

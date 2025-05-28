@@ -3,6 +3,7 @@
 #include "ImuTypes.h"
 #include "System.h"
 #include "opencv2/core/mat.hpp"
+#include <atomic>
 #include <cmath>
 #include <cstddef>
 #include <memory>
@@ -23,6 +24,7 @@ PoseMerge::PoseMerge() {
     this->instance_ = this;
     imuMeas_.reserve(5000);
     record_flag = true;
+    is_preview = true;
 
 }
 
@@ -32,6 +34,7 @@ PoseMerge::PoseMerge(std::shared_ptr<ORB_SLAM3::System> orbsys){
     this->orbsys_ = orbsys;
     imuMeas_.reserve(5000);
     record_flag = true;
+    is_preview = true;
 
 
     
@@ -48,49 +51,59 @@ PoseMerge::PoseMerge(std::string vocbin, std::string yaml, std::string ace_model
 
     imuMeas_.reserve(5000);
     record_flag = true;
+    is_preview = true;
 };
 
 void PoseMerge::start() {
+    is_preview=false;
     th_slam = std::thread(&PoseMerge::process,this);
 };
 
 void PoseMerge::start_record() {
+    is_preview=false;
     th_record = std::thread(&PoseMerge::process_record,this);
 }
 
 void PoseMerge::process() {
     while (1) {
-        cv::Mat img; double timestamp = 0;
+        // cv::Mat img; 
+        double timestamp = 0;
+        std::shared_ptr<IMG_MSG> img_ptr;
         std::vector<ORB_SLAM3::IMU::Point> imu_vec;
         imu_vec.reserve(5000);
 
-        if(getM(img, timestamp, imu_vec)) {
-            auto tcw = orbsys_->TrackMonocular(img, timestamp, imu_vec);
+        if(getM(img_ptr, imu_vec)) {
+            // LOGI("%f")
+            auto tcw = orbsys_->TrackMonocular(img_ptr->img, (img_ptr->t)/1e9, imu_vec);
             auto twc = tcw.inverse();
             curORB_ = twc.matrix();
-            LOGI("SLAM TWC: %f, %f, %f", curORB_(0,0),curORB_(0,1),curORB_(0,2));       
+            LOGI("IMUVEC:%d %f, SLAM TWC: %f, %f, %f",imu_vec.size(), imu_vec[0].a.x(), curORB_(0,0),curORB_(0,1),curORB_(0,2));       
         }
     }
 };
 
 void PoseMerge::process_record() {
     out_file_img.setf(ios::fixed);
-    out_file_img.precision(5);
+    out_file_img.precision(0);
 
     out_file_imu.setf(ios::fixed);
     out_file_imu.precision(5);
 
     while (record_flag) {
-        cv::Mat img; double img_timestamp = 0;
+        // cv::Mat img;
+        double img_timestamp = 0;
+        std::shared_ptr<IMG_MSG> img_ptr;
         std::vector<ORB_SLAM3::IMU::Point> imu_vec;
         imu_vec.reserve(5000);
-        if (getM(img, img_timestamp, imu_vec)) {
-            LOGI("RECORD FRAME---");
-            video_out.write(img);
-            out_file_img<<img_timestamp<<" "<<std::endl;
+        if (getM(img_ptr, imu_vec)) {
+            // LOGI("RECORD FRAME---");
+            video_out.write(img_ptr->img);
+            out_file_img<<img_ptr->t<<" "<<std::endl;
             for (auto iter : imu_vec) {
-                out_file_imu<<iter.t<<" "<<iter.a.x() <<" " <<iter.a.y() << " " << iter.a.z()<< " "<<
-                                iter.w.x() <<" " <<iter.w.y() << " " << iter.w.z()<< " "<<std::endl;
+                out_file_imu<<iter.t<<" "<<
+                iter.w.x() <<" " <<iter.w.y() << " " << iter.w.z()<< " "<<
+                iter.a.x() <<" " <<iter.a.y() << " " << iter.a.z()<< " "<<
+                std::endl;
             }
         }
     }
@@ -100,11 +113,14 @@ void PoseMerge::process_record() {
 
 };
 
-bool PoseMerge::getM(cv::Mat& img, double& timestamp, std::vector<ORB_SLAM3::IMU::Point>& imu_vec) {
+bool PoseMerge::getM(std::shared_ptr<IMG_MSG>& img_msg_ptr, std::vector<ORB_SLAM3::IMU::Point>& imu_vec) {
 
-    if (img_queue_.is_empty()) {
+    if ((img_queue_.is_empty())||(imu_queue_.is_empty())) {
         return false;
     }
+    LOGI("IMAGE QUEUE SIZE : %d,  IMU QUEUE SIZE: %d", img_queue_.size(),imu_queue_.size());
+    LOGI("IMG FRONT:%f, IMG BACK: %f",img_queue_.front()->t,img_queue_.back()->t);
+    LOGI("IMU FRONT:%f, IMU BACK: %f",imu_queue_.front()->t,imu_queue_.back()->t);
 
     if (imu_queue_.back()->t < img_queue_.front()->t) {
         // 等待 imu 数据
@@ -112,16 +128,18 @@ bool PoseMerge::getM(cv::Mat& img, double& timestamp, std::vector<ORB_SLAM3::IMU
     }
     if (imu_queue_.front()->t > img_queue_.back()->t) {
         // 等待 img 数据
+        img_queue_.pop();
         return false;
     }
     if (img_queue_.front()->t < imu_queue_.front()->t) {
         // 图像的front和下一个之间有空缺的imu，所以舍弃第一张图片
         img_queue_.pop();
+        return false;
     }
-    std::shared_ptr<IMG_MSG> img_ptr = img_queue_.wait_and_pop();
-    timestamp = img_ptr->t;
-    img = img_ptr->img.clone();
-    while (imu_queue_.front()->t < img_ptr->t) {
+    img_msg_ptr = img_queue_.wait_and_pop();
+    // timestamp = img_ptr->t;
+    // img_msg_ptr = img_ptr->img.clone();
+    while ((!imu_queue_.is_empty()) && (imu_queue_.front()->t <= img_msg_ptr->t)) {
         // std::shared_ptr<ORB_SLAM3::IMU::Point> imu_ptr = imu_queue_.wait_and_pop();
         // imu_vec.emplace_back(
         //     imu_ptr->a.x(),imu_ptr->a.y(),imu_ptr->a.z(),
@@ -195,7 +213,7 @@ int PoseMerge::process_imu_sensor_events(int fd, int events, void *data) {
         assert(gyroEvent.type == ASENSOR_TYPE_GYROSCOPE);
 
 
-        double timeStampGyro = (gyroEvent.timestamp)/1e9;
+        double timeStampGyro = (gyroEvent.timestamp);
 //        LOGI("IMU gyro event timeStamp: %lf", timeStampGyro);
         //The timestamp is the amount of time in seconds since the device booted.
         assert(timeStampGyro > 0);
@@ -208,7 +226,7 @@ int PoseMerge::process_imu_sensor_events(int fd, int events, void *data) {
                 gyroEvent.uncalibrated_gyro.z_uncalib; //latestGyro.rotationRate.z;
 
         if (instance_->gyro_buf.size() == 0) {
-            LOGI("gyro interpolation buffer empty. should only happen once.");
+            // LOGI("gyro interpolation buffer empty. should only happen once.");
             instance_->gyro_buf.push_back(gyro_msg);
             instance_->gyro_buf.push_back(gyro_msg);
             continue;
@@ -237,7 +255,7 @@ int PoseMerge::process_imu_sensor_events(int fd, int events, void *data) {
             assert(numEvents == 1);
             assert(acclEvent.type == ASENSOR_TYPE_ACCELEROMETER);
 
-            acclEventTimestamp = (acclEvent.timestamp)/1e9;
+            acclEventTimestamp = (acclEvent.timestamp);
             // LOGI("imu_timestamp_from_c++: %f ", acclEventTimestamp);
             instance_->imu_timestamp_ = acclEventTimestamp;
 //            LOGI("IMU accl event timeStamp: %lf", timeStampAccl);
@@ -328,8 +346,9 @@ void PoseMerge::recvImu(std::shared_ptr<ORB_SLAM3::IMU::Point> imu_Msg) {
     // )
     // );
     // mtx_MeasVec.unlock();
-
-    imu_queue_.push(imu_Msg);
+    if (!is_preview) {
+        imu_queue_.push(imu_Msg);
+    }
 
 };
 
@@ -348,8 +367,8 @@ bool PoseMerge::alinTimestamp(double timestamp) {
 };
 
 void PoseMerge::putImg(cv::Mat img, double timestamp) {
-    if(alinTimestamp(timestamp)) {
-        LOGI("NEW IMAGE:%f",timestamp);
+    if(alinTimestamp(timestamp) && (!is_preview) && canPushImage()) {
+        // LOGI("NEW NDK IMAGE:%f",timestamp);
         std::shared_ptr<IMG_MSG> img_temp = std::make_shared<IMG_MSG>();
         img_temp->t = imu_timestamp_;
         img_temp->img = img;

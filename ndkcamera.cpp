@@ -1,7 +1,9 @@
 #include "ndkcamera.hpp"
 #include <cstddef>
+#include <ctime>
 #include <mutex>
 #include <opencv2/core/mat.hpp>
+#include <time.h>
 
 Camera* Camera::caminstance_ = nullptr;
 
@@ -25,13 +27,13 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
         //handleHandData(image);
         // AImage *yuv_image = nullptr;
         // auto status = AImageReader_acquireNextImage(reader, &(caminstance_->image));
-        LOGI("[File]%s [Func]%s [Line]%d", __FILE__, __FUNCTION__, __LINE__);
+        // LOGI("[File]%s [Func]%s [Line]%d", __FILE__, __FUNCTION__, __LINE__);
         // Check status here ...
 
 
         // Try to process data without blocking the callback
         std::thread processor([=](){
-            LOGI("<---------- Image processing loop ... --------->");
+            // LOGI("<---------- Image processing loop ... --------->");
             // uint8_t *yPixel = nullptr;
             // uint8_t *uPixel = nullptr;
             // uint8_t *vPixel = nullptr;
@@ -61,9 +63,16 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
             // // LOGI(...)
             // LOGI("---NDK CAM:rows:%d, cols:%d",_yuv_rgb_img.rows, _yuv_rgb_img.cols);
 // ===========================================================================================
-            int64_t image_timestamp;
-            AImage_getTimestamp(image, &image_timestamp);
-            LOGI("NDK CAM TIMESTAMP:%d",image_timestamp);
+            // int64_t image_timestamp;
+            // AImage_getTimestamp(image, &image_timestamp);
+
+            // struct timespec timestamp = {0,0};
+            // // clock_gettime(CLOCK_MONOTONIC, &timestamp);
+            // clock_gettime(CLOCK_MONOTONIC_RAW, &timestamp);
+
+            // LOGI("NDK CAM TIMESTAMP:%d",image_timestamp);
+
+
 
             
             uint8_t *yBuffer, *uBuffer, *vBuffer;
@@ -135,25 +144,25 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
 
             caminstance_->setimg(rgb_mat);
             if (caminstance_->posemerge_!=nullptr) {
-                caminstance_->posemerge_->putImg(rgb_mat.clone(), static_cast<double>(image_timestamp));
+                caminstance_->posemerge_->putImg(rgb_mat, static_cast<double>(0.001));
             }
 
             AImage_delete(image);
 
     });
-    processor.detach();
+    processor.join();
     //得到image处理完后记得删除，不然缓冲区溢出了你打开的camera就寄了
 }
 };
 
 void Camera::setimg(const cv::Mat& callback_img) {
     std::unique_lock<std::mutex> lock(this->mtx_img);
-    this->img = callback_img.clone();
+    this->img = callback_img;
 }
 
 void Camera::getimg(cv::Mat& return_img) {
     std::unique_lock<std::mutex> lock(this->mtx_img);
-    return_img = this->img.clone();
+    return_img = this->img;
     // return this->img;
 }
 

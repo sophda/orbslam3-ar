@@ -34,6 +34,12 @@
 #include <mutex>
 #include <chrono>
 
+#include <android/log.h>
+
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, __FILE__, __VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, __FILE__, __VA_ARGS__)
+#define printf(...)  __android_log_print(ANDROID_LOG_ERROR, __FILE__, __VA_ARGS__)
+
 
 using namespace std;
 
@@ -612,6 +618,8 @@ void Tracking::newParameterLoader(Settings *settings) {
 
     const float sf = sqrt(mImuFreq);
     mpImuCalib = new IMU::Calib(Tbc,Ng*sf,Na*sf,Ngw/sf,Naw/sf);
+
+    printf("tbc:%f %f %f , fre: %f, ng:%f, na:%f, ngw:%f, naw:%f, sf:%f",Tbc.matrix()(0,0),Tbc.matrix()(0,1),Tbc.matrix()(0,2),mImuFreq,Ng,Na,Ngw,Naw,sf);
 
     mpImuPreintegratedFromLastKF = new IMU::Preintegrated(IMU::Bias(),*mpImuCalib);
 }

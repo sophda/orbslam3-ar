@@ -78,7 +78,12 @@ public:
 
     void start_record();
 
+    void setCamRecordFre(int times) { //设置倍数
+        cam_frequency_ = times;
+    }
+
     void stop_record() {
+        is_preview = true;
         if (record_flag.load()) {
             record_flag.store(false);
             if (th_record.joinable()) {
@@ -94,9 +99,9 @@ private:
     std::thread th_slam, th_record;
     // record
     std::atomic<bool> record_flag;
+    bool is_preview;
     std::ofstream out_file_img,out_file_imu;
     cv::VideoWriter video_out;
-
     void process();
     void process_record();
     
@@ -110,6 +115,7 @@ private:
     static PoseMerge* instance_;
     bool bskipImg_=true, balinTimestamp_=false; 
     Eigen::Matrix4f curORB_;
+    int cam_frequency_=1, cam_times_ = 0;
 
     std::shared_ptr<ORB_SLAM3::System > orbsys_;
 
@@ -118,8 +124,16 @@ private:
     SafeQueue<ORB_SLAM3::IMU::Point> imu_queue_;
     SafeQueue<IMG_MSG> img_queue_;
 
-    bool getM(cv::Mat& img, double& timestamp, std::vector<ORB_SLAM3::IMU::Point>& imu_vec);
+    bool getM(std::shared_ptr<IMG_MSG>& img_msg_ptr, std::vector<ORB_SLAM3::IMU::Point>& imu_vec);
 
+    bool canPushImage() {
+        cam_times_++;
+        if (cam_times_ % cam_frequency_ ==0 ) {
+            cam_times_ = 0;
+            return true;
+        }
+        return false;
+    };
 
 // 获取imu数据
 private:
@@ -135,7 +149,7 @@ private:
     static ASensorEventQueue *gyroscopeEventQueue;
 
     const int LOOPER_ID_USER = 3;
-    const int SENSOR_REFRESH_RATE_HZ = 100;
+    const int SENSOR_REFRESH_RATE_HZ = 200;
     const int32_t SENSOR_REFRESH_PERIOD_US = int32_t(1000000 / SENSOR_REFRESH_RATE_HZ);
 
     static int process_imu_sensor_events(int fd, int events, void *data);

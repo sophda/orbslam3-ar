@@ -26,6 +26,11 @@ public:
         std::unique_lock<std::mutex> lock(mutex_);
         return queue_.empty();
     }
+
+    int size() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        return queue_.size();
+    }
     
     void push(std::shared_ptr<T> item)
     {
@@ -54,7 +59,17 @@ public:
 
     void pop() {
         std::unique_lock<std::mutex> lock(mutex_);
-        queue_.pop();
+        if (!queue_.empty()) {
+            queue_.pop();
+        }
+
+    }
+
+    void clear() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        while (!queue_.empty()) {
+            queue_.pop();
+        }
     }
 
 };
