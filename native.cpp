@@ -94,7 +94,7 @@ extern "C" {
 
         ndkcam = std::make_shared<Camera>(kposeMerge);
         kposeMerge->imuStart();
-        kposeMerge->setCamRecordFre(2);
+        kposeMerge->setCamRecordFre(3);
         data = new uchar[1280*720*4];
 
     }

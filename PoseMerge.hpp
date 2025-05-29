@@ -109,7 +109,7 @@ private:
 // orb
 private:
 
-    std::vector<IMU_MSG > gyro_buf;
+    std::vector<IMU_MSG> gyro_buf;
 
     std::string ace_model_path_;
     static PoseMerge* instance_;
