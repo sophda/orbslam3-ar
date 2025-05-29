@@ -63,14 +63,14 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
             // // LOGI(...)
             // LOGI("---NDK CAM:rows:%d, cols:%d",_yuv_rgb_img.rows, _yuv_rgb_img.cols);
 // ===========================================================================================
-            // int64_t image_timestamp;
-            // AImage_getTimestamp(image, &image_timestamp);
+            int64_t image_timestamp;
+            AImage_getTimestamp(image, &image_timestamp);
+            // LOGI("ndk cam : %lld",image_timestamp);
 
             // struct timespec timestamp = {0,0};
             // // clock_gettime(CLOCK_MONOTONIC, &timestamp);
             // clock_gettime(CLOCK_MONOTONIC_RAW, &timestamp);
-
-            // LOGI("NDK CAM TIMESTAMP:%d",image_timestamp);
+            // LOGI("NDK CAM TIMESTAMP:%u",timestamp.tv_nsec);
 
 
 
@@ -144,7 +144,7 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
 
             caminstance_->setimg(rgb_mat);
             if (caminstance_->posemerge_!=nullptr) {
-                caminstance_->posemerge_->putImg(rgb_mat, static_cast<double>(0.001));
+                caminstance_->posemerge_->putImg(rgb_mat, static_cast<double>(image_timestamp));
             }
 
             AImage_delete(image);

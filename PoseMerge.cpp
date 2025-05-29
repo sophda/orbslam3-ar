@@ -79,6 +79,9 @@ void PoseMerge::process() {
             curORB_ = twc.matrix();
             LOGI("IMUVEC:%d %f, SLAM TWC: %f, %f, %f",imu_vec.size(), imu_vec[0].a.x(), curORB_(0,0),curORB_(0,1),curORB_(0,2));       
         }
+        usleep(1000);
+
+
     }
 };
 
@@ -118,9 +121,6 @@ bool PoseMerge::getM(std::shared_ptr<IMG_MSG>& img_msg_ptr, std::vector<ORB_SLAM
     if ((img_queue_.is_empty())||(imu_queue_.is_empty())) {
         return false;
     }
-    LOGI("IMAGE QUEUE SIZE : %d,  IMU QUEUE SIZE: %d", img_queue_.size(),imu_queue_.size());
-    LOGI("IMG FRONT:%f, IMG BACK: %f",img_queue_.front()->t,img_queue_.back()->t);
-    LOGI("IMU FRONT:%f, IMU BACK: %f",imu_queue_.front()->t,imu_queue_.back()->t);
 
     if (imu_queue_.back()->t < img_queue_.front()->t) {
         // 等待 imu 数据
@@ -136,6 +136,12 @@ bool PoseMerge::getM(std::shared_ptr<IMG_MSG>& img_msg_ptr, std::vector<ORB_SLAM
         img_queue_.pop();
         return false;
     }
+
+    LOGI("IMAGE QUEUE SIZE : %d,  IMU QUEUE SIZE: %d", img_queue_.size(),imu_queue_.size());
+    LOGI("IMG FRONT:%f, IMG BACK: %f",img_queue_.front()->t/1e9,img_queue_.back()->t/1e9);
+    LOGI("IMU FRONT:%f, IMU BACK: %f",imu_queue_.front()->t/1e9,imu_queue_.back()->t/1e9);
+
+
     img_msg_ptr = img_queue_.wait_and_pop();
     // timestamp = img_ptr->t;
     // img_msg_ptr = img_ptr->img.clone();
@@ -370,7 +376,7 @@ void PoseMerge::putImg(cv::Mat img, double timestamp) {
     if(alinTimestamp(timestamp) && (!is_preview) && canPushImage()) {
         // LOGI("NEW NDK IMAGE:%f",timestamp);
         std::shared_ptr<IMG_MSG> img_temp = std::make_shared<IMG_MSG>();
-        img_temp->t = imu_timestamp_;
+        img_temp->t = timestamp+timeGap_;
         img_temp->img = img;
         img_queue_.push(img_temp);
     }
