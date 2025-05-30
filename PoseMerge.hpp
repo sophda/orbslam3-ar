@@ -142,7 +142,7 @@ private:
     shared_ptr<IMU_MSG> cur_acc = shared_ptr<IMU_MSG>(
         new IMU_MSG());
     std::mutex mtx_MeasVec;
-    double timeGap_=0;
+    double time_shift_ = 0;
     
     // #if defined (ANDROID)
     static ASensorEventQueue *accelerometerEventQueue;

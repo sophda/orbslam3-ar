@@ -1247,21 +1247,21 @@ void LocalMapping::InitializeIMU(float priorG, float priorA, bool bFIBA)
                 continue;
             have_num++;
             dirG -= (*itKF)->mPrevKF->GetImuRotation() * (*itKF)->mpImuPreintegrated->GetUpdatedDeltaVelocity();
-            auto a = (*itKF)->mPrevKF->GetImuRotation();
-            auto b = (*itKF)->mpImuPreintegrated->GetUpdatedDeltaVelocity();
-            LOGI("iterkf-rotation:%f,%f,%f, iter-deltav:%f %f %f ",a(0,0),a(0,1),a(0,1),b(0),b(1),b(2));
+            // auto a = (*itKF)->mPrevKF->GetImuRotation();
+            // auto b = (*itKF)->mpImuPreintegrated->GetUpdatedDeltaVelocity();
+            // LOGI("iterkf-rotation:%f,%f,%f, iter-deltav:%f %f %f ",a(0,0),a(0,1),a(0,1),b(0),b(1),b(2));
             Eigen::Vector3f _vel = ((*itKF)->GetImuPosition() - (*itKF)->mPrevKF->GetImuPosition())/(*itKF)->mpImuPreintegrated->dT;
             (*itKF)->SetVelocity(_vel);
             (*itKF)->mPrevKF->SetVelocity(_vel);
         }
-        LOGI("dirg: %f %f %f",dirG[0],dirG[1],dirG[2]);
-        if (have_num<6) {
-            LOGI("TOO FEW IMU DATA");
-            bInitializing = false;
-            mbBadImu = true;
-            return;
+        // LOGI("dirg: %f %f %f",dirG[0],dirG[1],dirG[2]);
+        // if (have_num<6) {
+        //     LOGI("TOO FEW IMU DATA");
+        //     bInitializing = false;
+        //     mbBadImu = true;
+        //     return;
             
-        }
+        // }
 
         dirG = dirG/dirG.norm();
         Eigen::Vector3f gI(0.0f, 0.0f, -1.0f);
