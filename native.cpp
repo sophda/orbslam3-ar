@@ -94,7 +94,7 @@ extern "C" {
 
         ndkcam = std::make_shared<Camera>(kposeMerge);
         kposeMerge->imuStart();
-        kposeMerge->setCamRecordFre(3);
+        kposeMerge->setCamRecordFre(2);
         data = new uchar[1280*720*4];
 
     }
@@ -116,8 +116,6 @@ extern "C" {
         kposeMerge->start();
     }
 
-
-
     void ndkcam_saveimg() {
         cv::Mat temp_img;
         ndkcam->getimg(temp_img);
@@ -137,7 +135,7 @@ extern "C" {
 
     };
 
-    void getpose(float T[],float R[]) {
+    void ndkcam_getPose(float T[],float R[]) {
         Eigen::Matrix4f twc = kposeMerge->getPose();
         Mat twc_mat;
         cv::eigen2cv(twc,twc_mat);
