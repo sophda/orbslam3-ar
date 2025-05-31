@@ -1,0 +1,7 @@
+build
+androidbuild
+cmake-build-debug-wsl
+dsacstar/build
+dsacstar/dist
+dsacstar/dsacstar.egg-info
+.idea

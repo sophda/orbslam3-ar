@@ -5,6 +5,10 @@ SET(PROJECT_NAME slamAR)
 
 project(${PROJECT_NAME})
 
+# set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_C_COMPILER "clang")
+# set(CMAKE_CXX_COMPILER "clang++")
+
 
 set(ANDROID_ABI "arm64-v8a" CACHE STRING "")
 set(ANDROID_PLATFORM "19" CACHE STRING "")
@@ -46,10 +50,22 @@ include_directories(
     /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Sophus
     /home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/boost_1_82_0
 )
+##################### ORB-SLAM3 ######################
 add_subdirectory(
         ${CMAKE_CURRENT_SOURCE_DIR}/ORB_SLAM3
         ${CMAKE_CURRENT_SOURCE_DIR}/ORB_SLAM3/build
 )
+######################################################
+
+
+##################### ACE ############################
+
+add_subdirectory(
+    ${CMAKE_CURRENT_SOURCE_DIR}/ACE-Libtorch
+    ${CMAKE_CURRENT_SOURCE_DIR}/ACE-Libtorch/build
+)
+
+
 
 # this target
 option(BUILD_ANDROID "build andorid lib" TRUE)
