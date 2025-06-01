@@ -22,7 +22,7 @@ PoseMerge* PoseMerge::instance_ = nullptr;
 
 PoseMerge::PoseMerge() {
     this->instance_ = this;
-    imuMeas_.reserve(5000);
+    // imuMeas_.reserve(5000);
     record_flag = true;
     is_preview = true;
 
@@ -32,7 +32,7 @@ PoseMerge::PoseMerge(std::shared_ptr<ORB_SLAM3::System> orbsys){
 
     this->instance_ = this;
     this->orbsys_ = orbsys;
-    imuMeas_.reserve(5000);
+    // imuMeas_.reserve(5000);
     record_flag = true;
     is_preview = true;
 
@@ -47,6 +47,8 @@ PoseMerge::PoseMerge(std::string vocbin, std::string yaml, std::string ace_model
                                                         ORB_SLAM3::System::IMU_MONOCULAR);
     LOGI("create slam");
 
+    this->acemodel_ = std::make_shared<AceLocal>(ace_model_path);
+
     imuMeas_.reserve(5000);
     record_flag = true;
     is_preview = true;
@@ -60,6 +62,12 @@ void PoseMerge::start() {
 void PoseMerge::start_record() {
     is_preview=false;
     th_record = std::thread(&PoseMerge::process_record,this);
+}
+
+void PoseMerge::aceForward() {
+    double a=1234;
+    acemodel_->test_ace(a);
+    printf("ace: %f",a);
 }
 
 void PoseMerge::process() {

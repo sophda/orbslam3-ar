@@ -5,9 +5,10 @@ SET(PROJECT_NAME slamAR)
 
 project(${PROJECT_NAME})
 
-# set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 # set(CMAKE_C_COMPILER "clang")
 # set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -openmp")
 
 
 set(ANDROID_ABI "arm64-v8a" CACHE STRING "")
@@ -17,6 +18,12 @@ set(ANDROID_PLATFORM "19" CACHE STRING "")
 # set(CMAKE_C_COMPILER clang)
 # set(ANDROID_NDK "/home/sophda/src/android-ndk-r25c" CACHE STRING "")
 # add_compile_definitions(ANDROID_ABI arm64-v8a)
+
+#############################################################################
+
+#############################################################################
+
+
 SET(OpenCV_DIR /home/sophda/src/opencv-3.4.16/armv8_build)
 find_package(OpenCV 3.4.16 REQUIRED)
 
@@ -39,7 +46,8 @@ include_directories(
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/ORB_SLAM3/Thirdparty/eigen-3.4.0
 )
-
+include_directories(/home/sophda/libtorch/pytorch/android-shared/include/torch/csrc/api/include)
+include_directories(/home/sophda/libtorch/pytorch/android-shared/include)
 
 include_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Sophus/sophus)
 include_directories(/home/sophda/project/OrbSlam3AR/ORB_SLAM3/Thirdparty/Sophus)
@@ -55,10 +63,6 @@ add_subdirectory(
         ${CMAKE_CURRENT_SOURCE_DIR}/ORB_SLAM3
         ${CMAKE_CURRENT_SOURCE_DIR}/ORB_SLAM3/build
 )
-######################################################
-
-
-##################### ACE ############################
 
 add_subdirectory(
     ${CMAKE_CURRENT_SOURCE_DIR}/ACE-Libtorch
@@ -86,4 +90,6 @@ target_link_libraries(
     libboost_system-clang-mt-a64-1_82.a
     mediandk
     camera2ndk
+    ace
+    # ${TORCH_LIBRARIES} 
 )

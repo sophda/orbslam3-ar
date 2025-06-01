@@ -29,8 +29,9 @@
 using namespace std;
 using namespace cv;
 // using namespace ORB_SLAM3;
-string settings_file = "/storage/emulated/0/4DAR/Settings.yaml";
-string voc_file = "/storage/emulated/0/4DAR/ORBvoc.bin";
+string settings_file = "/storage/emulated/0/ARBSLAM/Settings.yaml";
+string voc_file = "/storage/emulated/0/ARBSLAM/ORBvoc.bin";
+string aceModelPath = "/storage/emulated/0/ARBSLAM/ace.jit";
 
 cv::VideoWriter videoout;
 std::ofstream gyro;
@@ -53,7 +54,7 @@ void Log(string str)
     time_t timep;
     time(&timep);
 
-    out.open("/storage/emulated/0/4DAR/log_fun.txt",ios::out|ios::app);
+    out.open("/storage/emulated/0/ARBSLAM/log_fun.txt",ios::out|ios::app);
     // out<< "call save altas function" <<std::endl;
     out << asctime(localtime(&timep)) << "      :" <<str<<std::endl;
 
@@ -82,20 +83,20 @@ Mat R_,R_T;
 std::shared_ptr<PoseMerge> kposeMerge ;
 std::shared_ptr<Camera> ndkcam;
 
-uchar* data;
+uchar* g_data;
 
 // ndk camera & pose merge func
 extern "C" {
 
     void init_sys() {
 
-        kposeMerge = std::make_shared<PoseMerge>(voc_file,settings_file,"ABC");
-        kposeMerge->set_out_file("/storage/emulated/0/4DAR/");
+        kposeMerge = std::make_shared<PoseMerge>(voc_file,settings_file,aceModelPath);
+        kposeMerge->set_out_file("/storage/emulated/0/ARBSLAM/");
 
         ndkcam = std::make_shared<Camera>(kposeMerge);
         kposeMerge->imuStart();
         kposeMerge->setCamRecordFre(2);
-        data = new uchar[1280*720*4];
+        g_data = new uchar[1280*720*4];
 
     }
 
@@ -119,7 +120,7 @@ extern "C" {
     void ndkcam_saveimg() {
         cv::Mat temp_img;
         ndkcam->getimg(temp_img);
-        cv::imwrite("/storage/emulated/0/4DAR/ndk.jpg", temp_img);
+        cv::imwrite("/storage/emulated/0/ARBSLAM/ndk.jpg", temp_img);
 
     }
 
@@ -130,8 +131,8 @@ extern "C" {
         cv::cvtColor(temp_img, temp_img, cv::COLOR_BGR2RGBA);
         
         size = temp_img.cols * temp_img.rows * temp_img.channels();
-        memcpy(data, temp_img.data, temp_img.total()*sizeof(uchar)*4);
-        return data;
+        memcpy(g_data, temp_img.data, temp_img.total()*sizeof(uchar)*4);
+        return g_data;
 
     };
 
@@ -155,6 +156,10 @@ extern "C" {
         T[2] = twc_mat.at<float>(2,3);
 
     };
+
+    void ndkcam_testPytorch() {
+        kposeMerge->aceForward();
+    }
 
 }
 
