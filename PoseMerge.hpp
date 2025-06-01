@@ -21,13 +21,13 @@
 #include <chrono>
 
 #include "ThreadSafeQueue.hpp"
+#include "ACE-Libtorch/ace.hpp"
+
 // #if defined (ANDROID)
 // android IMU sensor
 #include <android/looper.h>
 #include <android/sensor.h>
-
 #include <android/log.h>
-
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, __FILE__, __VA_ARGS__)
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, __FILE__, __VA_ARGS__)
 #define printf(...)  __android_log_print(ANDROID_LOG_ERROR, __FILE__, __VA_ARGS__)
@@ -78,6 +78,8 @@ public:
 
     void start_record();
 
+    void aceForward();
+
     void setCamRecordFre(int times) { //设置倍数
         cam_frequency_ = times;
     }
@@ -118,6 +120,7 @@ private:
     int cam_frequency_=1, cam_times_ = 0;
 
     std::shared_ptr<ORB_SLAM3::System > orbsys_;
+    std::shared_ptr<AceLocal> acemodel_;
 
     std::vector<ORB_SLAM3::IMU::Point> imuMeas_;
 
