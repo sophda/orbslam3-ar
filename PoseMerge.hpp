@@ -81,7 +81,8 @@ public:
     void aceForward();
 
     void setCamRecordFre(int times) { //设置倍数
-        cam_frequency_ = times;
+        // cam_frequency_ = times;
+        cam_frequency_.store(times,std::memory_order_release);
     }
 
     void stop_record() {
@@ -117,7 +118,8 @@ private:
     static PoseMerge* instance_;
     bool bskipImg_=true, balinTimestamp_=false; 
     Eigen::Matrix4f curORB_;
-    int cam_frequency_=1, cam_times_ = 0;
+    int  cam_times_ = 0;
+    std::atomic<int> cam_frequency_;
 
     std::shared_ptr<ORB_SLAM3::System > orbsys_;
     std::shared_ptr<AceLocal> acemodel_;
@@ -131,7 +133,7 @@ private:
 
     bool canPushImage() {
         cam_times_++;
-        if (cam_times_ % cam_frequency_ ==0 ) {
+        if (cam_times_ % cam_frequency_.load(std::memory_order_acquire) ==0 ) {
             cam_times_ = 0;
             return true;
         }
@@ -144,7 +146,7 @@ private:
     int imu_prepare = 0;
     shared_ptr<IMU_MSG> cur_acc = shared_ptr<IMU_MSG>(
         new IMU_MSG());
-    std::mutex mtx_MeasVec;
+    std::mutex mtx_record_rate;
     double time_shift_ = 0;
     
     // #if defined (ANDROID)
@@ -161,11 +163,7 @@ private:
     
     bool alinTimestamp(double timestamp);
 
-
-
-
     // #endif
-
 
 };
 

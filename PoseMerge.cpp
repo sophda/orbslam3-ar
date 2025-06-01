@@ -17,7 +17,7 @@ ASensorEventQueue *PoseMerge::gyroscopeEventQueue = nullptr;
 
 // #endif
 
-// 新建一个静态instance实例，在初始化前别乱☞
+// 新建一个静态instance实例，在初始化前别乱☞,供回调使用
 PoseMerge* PoseMerge::instance_ = nullptr;
 
 PoseMerge::PoseMerge() {
@@ -86,8 +86,6 @@ void PoseMerge::process() {
             LOGI("IMUVEC:%d %f, SLAM TWC: %f, %f, %f",imu_vec.size(), imu_vec[0].a.x(), curORB_(0,0),curORB_(0,1),curORB_(0,2));       
         }
         // usleep(500);
-
-
     }
 };
 
@@ -127,13 +125,6 @@ bool PoseMerge::getM(std::shared_ptr<IMG_MSG>& img_msg_ptr, std::vector<ORB_SLAM
     if ((img_queue_.is_empty())||(imu_queue_.is_empty())) {
         return false;
     }
-    // if (img_queue_.size() >= 5) {
-    //     img_queue_.clear();
-    //     imu_queue_.clear();
-    //     return false;
-    // }
-    
-
     if (imu_queue_.back()->t < img_queue_.front()->t) {
         // 等待 imu 数据
         return false;
@@ -148,6 +139,11 @@ bool PoseMerge::getM(std::shared_ptr<IMG_MSG>& img_msg_ptr, std::vector<ORB_SLAM
         img_queue_.pop();
         return false;
     }
+
+    if (img_queue_.size()>5) {
+        cam_frequency_.store(3,std::memory_order_release);
+    }
+    
 
     LOGI("IMAGE QUEUE SIZE : %d,  IMU QUEUE SIZE: %d", img_queue_.size(),imu_queue_.size());
     LOGI("IMG FRONT:%.9f, IMG BACK: %.9f",img_queue_.front()->t,img_queue_.back()->t);
@@ -343,27 +339,11 @@ int PoseMerge::process_imu_sensor_events(int fd, int events, void *data) {
     }
     return 1;
 }
-// #endif
-
-// std::vector<ORB_SLAM3::IMU::Point> PoseMerge::getMeasIMU() {
-//     std::vector<ORB_SLAM3::IMU::Point > tmp;
-//     for (auto iter : ) {
-    
-//     }
-// };
 
 void PoseMerge::recvImu(std::shared_ptr<ORB_SLAM3::IMU::Point> imu_Msg) {
     // LOGI("GET IMU DATA： %f %f %f %f %f %f",imu_Msg->a.x(), imu_Msg->a.y(), imu_Msg->a.z(),
     // imu_Msg->w.x(), imu_Msg->w.y(), imu_Msg->w.z());
 
-    // mtx_MeasVec.lock();
-    // this->imuMeas_.push_back( ORB_SLAM3::IMU::Point(
-    //     imu_Msg->acc.x(), imu_Msg->acc.y(), imu_Msg->acc.z(),
-    //     imu_Msg->gyr.x(), imu_Msg->gyr.y(), imu_Msg->gyr.z(),
-    //     imu_Msg->header
-    // )
-    // );
-    // mtx_MeasVec.unlock();
     if (!is_preview) {
         imu_queue_.push(imu_Msg);
     }
@@ -376,10 +356,7 @@ bool PoseMerge::alinTimestamp(double timestamp) {
     if (!this->balinTimestamp_) {
         balinTimestamp_ = true;
         time_shift_ = imu_timestamp_ - timestamp; // 假设imu的时间戳更大，也就是图片时间戳要加上这个时间戳才是imu同步的情况
-        // imu_queue_.clear();
-        // mtx_MeasVec.lock();
-        // imuMeas_.clear(); //
-        // mtx_MeasVec.unlock();
+
     }
     return balinTimestamp_;
 };
