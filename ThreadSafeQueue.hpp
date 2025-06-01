@@ -28,7 +28,7 @@ public:
     }
 
     int size() {
-        std::unique_lock<std::mutex> lock(mutex_);
+        // std::unique_lock<std::mutex> lock(mutex_);
         return queue_.size();
     }
     
@@ -36,7 +36,7 @@ public:
     {
         std::unique_lock<std::mutex> lock(mutex_);
         queue_.push(item);
-        cond_.notify_one();
+        cond_.notify_all();
     };
 
     std::shared_ptr<T> front() {
@@ -62,7 +62,6 @@ public:
         if (!queue_.empty()) {
             queue_.pop();
         }
-
     }
 
     void clear() {
@@ -71,7 +70,6 @@ public:
             queue_.pop();
         }
     }
-
 };
 
 
