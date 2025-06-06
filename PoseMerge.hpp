@@ -3,6 +3,8 @@
 
 
 // #include "Eigen/Core/Matrix.h"
+#include <Eigen/Dense>
+// #include "Core/Matrix.h"
 #include "ImuTypes.h"
 #include "MapPoint.h"
 #include "System.h"
@@ -52,6 +54,12 @@ struct IMG_MSG {
     cv::Mat img;
 };
 
+struct IMG_POSE_t {
+    double t;
+    cv::Mat img;
+    Eigen::Matrix4f tcw;
+};
+
 class PoseMerge{
 public:
     PoseMerge();
@@ -62,9 +70,11 @@ public:
 
     void putImg(cv::Mat img, double timestamp);
 
-    void alinOrbAce(std::map<double, Transform> Torb, std::map<double, Transform> Tace);
+    // void alinOrbAce(std::map<double, Transform> Torb, std::map<double, Transform> Tace);
 
     Eigen::Matrix4f getPose() const;
+
+    Eigen::Matrix4f getOriginPose() const;
 
     void set_out_file(std::string path) {
         out_file_imu.open(path+"/imu.txt",ios::out );
@@ -79,6 +89,8 @@ public:
     void start_record();
 
     void aceForward();
+
+    void start_ace_forward();
 
     void setCamRecordFre(int times) { //设置倍数
         // cam_frequency_ = times;
@@ -99,7 +111,7 @@ public:
 
 // thread
 private:
-    std::thread th_slam, th_record;
+    std::thread th_slam, th_record, th_ace;
     // record
     std::atomic<bool> record_flag;
     bool is_preview;
@@ -112,7 +124,10 @@ private:
 // orb
 private:
 
+    Eigen::Matrix4f T_as;
     std::vector<IMU_MSG> gyro_buf;
+
+    IMG_POSE_t img_pose_t;
 
     std::string ace_model_path_;
     static PoseMerge* instance_;
@@ -146,7 +161,7 @@ private:
     int imu_prepare = 0;
     shared_ptr<IMU_MSG> cur_acc = shared_ptr<IMU_MSG>(
         new IMU_MSG());
-    std::mutex mtx_record_rate;
+    std::mutex mtx_record_rate, mtx_ace;
     double time_shift_ = 0;
     
     // #if defined (ANDROID)
@@ -154,7 +169,7 @@ private:
     static ASensorEventQueue *gyroscopeEventQueue;
 
     const int LOOPER_ID_USER = 3;
-    const int SENSOR_REFRESH_RATE_HZ = 200;
+    const int SENSOR_REFRESH_RATE_HZ = 100;
     const int32_t SENSOR_REFRESH_PERIOD_US = int32_t(1000000 / SENSOR_REFRESH_RATE_HZ);
 
     static int process_imu_sensor_events(int fd, int events, void *data);

@@ -4,7 +4,7 @@
 #include <torch/script.h>
 #include <torch/torch.h>
 #include <opencv2/opencv.hpp>
-
+#include <Eigen/Core>
 #include <android/log.h>
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, __FILE__, __VA_ARGS__)
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, __FILE__, __VA_ARGS__)
@@ -19,7 +19,7 @@ public:
     }
 
     void initModel();
-    void forward(cv::Mat img, torch::Tensor& output);
+    Eigen::Matrix4f forward(cv::Mat img);
     void test_torch();
     void test_ace(double& temp);
     void preProcessImg(cv::Mat input, cv::Mat& output);

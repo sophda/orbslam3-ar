@@ -1,5 +1,4 @@
 #include "PoseMerge.hpp"
-// #include "Core/Matrix.h"
 #include "ImuTypes.h"
 #include "System.h"
 #include "opencv2/core/mat.hpp"
@@ -25,6 +24,7 @@ PoseMerge::PoseMerge() {
     // imuMeas_.reserve(5000);
     record_flag = true;
     is_preview = true;
+    T_as = Eigen::MatrixXf::Identity(4,4);
 
 }
 
@@ -35,6 +35,7 @@ PoseMerge::PoseMerge(std::shared_ptr<ORB_SLAM3::System> orbsys){
     // imuMeas_.reserve(5000);
     record_flag = true;
     is_preview = true;
+    T_as = Eigen::MatrixXf::Identity(4,4);
 
 };
 
@@ -52,6 +53,7 @@ PoseMerge::PoseMerge(std::string vocbin, std::string yaml, std::string ace_model
     imuMeas_.reserve(5000);
     record_flag = true;
     is_preview = true;
+    T_as = Eigen::MatrixXf::Identity(4,4);
 };
 
 void PoseMerge::start() {
@@ -64,10 +66,23 @@ void PoseMerge::start_record() {
     th_record = std::thread(&PoseMerge::process_record,this);
 }
 
+void PoseMerge::start_ace_forward() {
+
+    th_ace = std::thread(&PoseMerge::aceForward,this);
+    th_ace.join();
+
+}
+
 void PoseMerge::aceForward() {
-    double a=1234;
-    acemodel_->test_ace(a);
-    printf("ace: %f",a);
+    IMG_POSE_t temp;
+    mtx_ace.lock();
+    temp.t = img_pose_t.t;
+    temp.img = img_pose_t.img.clone();
+    temp.tcw = img_pose_t.tcw;
+    mtx_ace.unlock();
+
+    Eigen::Matrix4f Tace = acemodel_->forward(temp.img);
+    this->T_as = Tace * temp.tcw.inverse();
 }
 
 void PoseMerge::process() {
@@ -81,8 +96,13 @@ void PoseMerge::process() {
         if(getM(img_ptr, imu_vec)) {
             // LOGI("%f")
             auto tcw = orbsys_->TrackMonocular(img_ptr->img, img_ptr->t, imu_vec);
-            auto twc = tcw.inverse();
-            curORB_ = twc.matrix();
+            // auto twc = tcw.inverse();
+            curORB_ = tcw.matrix();
+            mtx_ace.lock();
+            img_pose_t.t = img_ptr->t;
+            img_pose_t.img = img_ptr->img;
+            img_pose_t.tcw = curORB_;
+            mtx_ace.unlock();
             LOGI("IMUVEC:%d %f, SLAM TWC: %f, %f, %f",imu_vec.size(), imu_vec[0].a.x(), curORB_(0,0),curORB_(0,1),curORB_(0,2));       
         }
         // usleep(500);
@@ -139,9 +159,12 @@ bool PoseMerge::getM(std::shared_ptr<IMG_MSG>& img_msg_ptr, std::vector<ORB_SLAM
         img_queue_.pop();
         return false;
     }
-
-    if (img_queue_.size()>5) {
-        cam_frequency_.store(3,std::memory_order_release);
+    int img_q_size = img_queue_.size();
+    if (img_q_size>3) {
+        cam_frequency_.store(4,std::memory_order_release);
+    }
+    else if (img_q_size>1) {
+        cam_frequency_.store(2,std::memory_order_release);
     }
     
 
@@ -166,9 +189,12 @@ bool PoseMerge::getM(std::shared_ptr<IMG_MSG>& img_msg_ptr, std::vector<ORB_SLAM
 };
 
 Eigen::Matrix4f PoseMerge::getPose() const {
-    return this -> curORB_;
+    return this -> T_as * this -> curORB_;
 };
 
+Eigen::Matrix4f PoseMerge::getOriginPose() const {
+    return this -> curORB_;
+}
 
 void PoseMerge::imuStart() {
     // #if defined (ANDROID)
@@ -210,10 +236,6 @@ void PoseMerge::imuStart() {
                                             SENSOR_REFRESH_PERIOD_US);
     assert(status >= 0);
 
-    // LOGI("IMU EventQueues initialized and started");
-
-
-    // #endif
 };
 
 

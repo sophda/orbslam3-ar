@@ -1,4 +1,5 @@
 // #include "System.h"
+#include <cmath>
 #include <cstring>
 #include <future>
 #include <memory>
@@ -33,57 +34,20 @@ string settings_file = "/storage/emulated/0/ARBSLAM/Settings.yaml";
 string voc_file = "/storage/emulated/0/ARBSLAM/ORBvoc.bin";
 string aceModelPath = "/storage/emulated/0/ARBSLAM/ace.jit";
 
-cv::VideoWriter videoout;
-std::ofstream gyro;
-int timestamp_gyro = 0;
-int coder=cv::VideoWriter::fourcc('M','J','P','G');//选择编码格式
-
-
-double timestamp = 0;
-int global_img = 0;
-bool savevideo = true;
-bool savevideoinit = false;
-void ransac(vector<Point3f>& pts_3d, int max_iter, float threshold,
-float &a1,float &b1,float &c1,float &d1);
-
-
-void Log(string str)
-{
-    std::ofstream out;
-    // get the time
-    time_t timep;
-    time(&timep);
-
-    out.open("/storage/emulated/0/ARBSLAM/log_fun.txt",ios::out|ios::app);
-    // out<< "call save altas function" <<std::endl;
-    out << asctime(localtime(&timep)) << "      :" <<str<<std::endl;
-
-    out.close();
-}
-// test
-extern "C"
-{
-    int sum(int x,int y)
-    {
-        return x+y;
-    }
-}
-
-
-// slam
-// ORB_SLAM3::System SLAM(voc_file,settings_file,ORB_SLAM3::System::MONOCULAR);
-// ORB_SLAM3::Map *activeMap ;
-
-// std::shared_ptr<ORB_SLAM3::System > kslam;
-
-Sophus::SE3f tcw; 
-Mat img_glob;
-Mat R_,R_T;
-
 std::shared_ptr<PoseMerge> kposeMerge ;
 std::shared_ptr<Camera> ndkcam;
-
 uchar* g_data;
+
+static float transform_ygx[] =
+{
+    1, 0, 0, 0,
+    0, -1, 0, 0,
+    0, 0, -1, 0,
+    0, 0, 0, 1
+};
+cv::Mat_<float> transformM(4, 4, transform_ygx);
+
+
 
 // ndk camera & pose merge func
 extern "C" {
@@ -101,7 +65,6 @@ extern "C" {
     }
 
     void start_cam_imu() {
-        // sleep(1);
         ndkcam->startCamera();
     }
 
@@ -137,28 +100,42 @@ extern "C" {
     };
 
     void ndkcam_getPose(float T[],float R[]) {
-        Eigen::Matrix4f twc = kposeMerge->getPose();
-        Mat twc_mat;
-        cv::eigen2cv(twc,twc_mat);
-        
-        R[0] = twc_mat.at<float>(0,0);
-        R[1] = twc_mat.at<float>(1,0);
-        R[2] = twc_mat.at<float>(2,0);
-        R[3] = twc_mat.at<float>(0,1);
-        R[4] = twc_mat.at<float>(1,1);
-        R[5] = twc_mat.at<float>(2,1);
-        R[6] = twc_mat.at<float>(0,2);
-        R[7] = twc_mat.at<float>(1,2);
-        R[8] = twc_mat.at<float>(2,2);
+        Eigen::Matrix4f tcw = kposeMerge->getPose();
 
-        T[0] = twc_mat.at<float>(0,3);
-        T[1] = twc_mat.at<float>(1,3);
-        T[2] = twc_mat.at<float>(2,3);
+        float qw = sqrtf(1.0f+tcw(0,0)+tcw(1,1)+tcw(2,2))/2.0f;
+        float qx = -(tcw(2,1)-tcw(1,2)) / (4*qw);
+        float qy = (tcw(1,0)-tcw(0,1)) / (4*qw);
+        float qz = -(tcw(0,2)-tcw(2,0)) / (4*qw);
+
+        float rotate_ygx[] =
+        {
+        1 - 2 * qy * qy - 2 * qz * qz, 2 * qx * qy - 2 * qz * qw, 2 * qx * qz + 2 * qy * qw, 0,
+        2 * qx * qy + 2 * qz * qw, 1 - 2 * qx * qx - 2 * qz * qz, 2 * qy * qz - 2 * qx * qw, 0,
+        2 * qx * qz - 2 * qy * qw, 2 * qy * qz + 2 * qx * qw, 1 - 2 * qx * qx - 2 * qy * qy, 0,
+        0, 0, 0, 1
+        };
+
+        cv::Mat_<float> rotateM(4,4,rotate_ygx);
+        rotateM = transformM * rotateM;
+
+        R[0] = rotateM.at<float>(0,0);
+        R[1] = rotateM.at<float>(1,0);
+        R[2] = rotateM.at<float>(2,0);
+        R[3] = rotateM.at<float>(0,1);
+        R[4] = rotateM.at<float>(1,1);
+        R[5] = rotateM.at<float>(2,1);
+        R[6] = rotateM.at<float>(0,2);
+        R[7] = rotateM.at<float>(1,2);
+        R[8] = rotateM.at<float>(2,2);
+
+        T[0] = tcw(0,3);
+        T[1] = -tcw(2,3);
+        T[2] = tcw(1,3);
 
     };
 
-    void ndkcam_testPytorch() {
-        kposeMerge->aceForward();
+    void ndkcam_aceforward() {
+        kposeMerge->start_ace_forward();
     }
 
 }
@@ -166,6 +143,23 @@ extern "C" {
 
 
 // slam using image from unity. very very slow
+cv::VideoWriter videoout;
+std::ofstream gyro;
+int timestamp_gyro = 0;
+int coder=cv::VideoWriter::fourcc('M','J','P','G');//选择编码格式
+
+
+double timestamp = 0;
+int global_img = 0;
+bool savevideo = true;
+bool savevideoinit = false;
+void ransac(vector<Point3f>& pts_3d, int max_iter, float threshold,
+float &a1,float &b1,float &c1,float &d1);
+
+Sophus::SE3f tcw; 
+Mat img_glob;
+Mat R_,R_T;
+
 extern "C"
 {
     void ProcessImage(uchar *image_data,float T[],float R[], int width, int height, double timestamp)
