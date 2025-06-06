@@ -3,7 +3,7 @@ rm -rf /home/sophda/project/OrbSlam3AR/ACE-Libtorch/dsacstar/build/*
 
 
 cd /home/sophda/project/OrbSlam3AR/arm64_build
-# rm -rf ./*
+rm -rf ./*
 # make clean
 cmake \
     -DCMAKE_TOOLCHAIN_FILE=${NDK27}/build/cmake/android.toolchain.cmake \

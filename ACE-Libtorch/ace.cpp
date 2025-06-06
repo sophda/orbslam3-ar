@@ -5,9 +5,26 @@
 #include <torch/torch.h>
 #include <iostream>
 #include <torch/script.h>
+
 #include "dsacstar.h"
 #include <opencv2/opencv.hpp>
 
+#include <Eigen/Dense>
+#include <Eigen/Core>
+
+void Tensor2EigenMat(torch::Tensor& t, Eigen::Matrix4f& m) {
+	if (t.dim() == 2) {
+		Eigen::Matrix4f m_tmp =  Eigen::MatrixXf::Identity(4,4);
+		auto num_elements = t.numel();
+		auto element_size = t.element_size();
+		auto size_in_bytes = num_elements * element_size;
+		std::copy(t.data_ptr<float>(), t.data_ptr<float>() + t.numel(), m_tmp.data());
+		m = m_tmp.transpose();
+	}
+	else {
+		std::cerr << "t.dim()=" << t.dim();
+	}
+}
 
 void AceLocal::test_torch(){
     // std::cout<< "Test torch" << std::endl;
@@ -18,11 +35,11 @@ void AceLocal::test_torch(){
 };
 void AceLocal::initModel() {
     model_ = torch::jit::load(model_path_);
-
 }
 
-void AceLocal::forward(cv::Mat img, torch::Tensor& output){
+Eigen::Matrix4f AceLocal::forward(cv::Mat img) {
     cv::Mat img_processed;
+    // torch::Tensor output;
     preProcessImg(img,img_processed);
 
     at::Tensor img_tensor = torch::from_blob(
@@ -54,7 +71,9 @@ void AceLocal::forward(cv::Mat img, torch::Tensor& output){
             8
             );
     // output = dsacstar_output.inverse();
-    output = dsacstar_output;
+    Eigen::Matrix4f output;
+    Tensor2EigenMat(dsacstar_output, output);
+    return output.inverse();
 
 }
 
@@ -80,7 +99,7 @@ void AceLocal::test_ace(double& temp) {
 //    /home/sophda/project/ace/datasets/Cambridge_KingsCollege/train/rgb/seq1_frame00001.png
     cv::Mat img = cv::imread("/storage/emulated/0/ARBSLAM/seq1_frame00002.png"); // img_r,img_f,img_n;
 
-    this->forward(img, pos);
+    Eigen::Matrix4f pose = this->forward(img);
     // torch::Tensor max = torch::argmax(pos,-1);
     // printf("ace: %f",max.item().toFloat());
     temp = 15.06;
