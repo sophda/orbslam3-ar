@@ -3,17 +3,25 @@
 #include <ctime>
 #include <mutex>
 #include <opencv2/core/mat.hpp>
+#include <opencv2/videoio.hpp>
+#include <thread>
 #include <time.h>
+#include "glyuv2rgb.hpp"
 
 Camera* Camera::caminstance_ = nullptr;
 
 Camera::Camera() {
     this->caminstance_ = this;
+    // this->yuvConverter_ = std::make_unique<YuvToRgbConverter>();
+    // this->yuvConverter_->initialize(img_width, img_heigth);
 }
 
 Camera::Camera(std::shared_ptr<PoseMerge> posemerge) {
     this->caminstance_ = this;
     this->posemerge_ = posemerge;
+
+    // this->yuvConverter_ = std::make_unique<YuvToRgbConverter>();
+    // this->yuvConverter_->initialize(img_width, img_heigth);
 }
 
 void Camera::onImageAvailable(void* context, AImageReader* reader) {
@@ -104,41 +112,41 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
 
             cv::Mat yuv_mat,rgb_mat;
             if (isNV21) {
-            yuv_mat = cv::Mat(height + height/2, width, CV_8UC1);
+                yuv_mat = cv::Mat(height + height/2, width, CV_8UC1);
 
-            // 复制 Y 平面
-            for (int i = 0; i < height; i++) {
-                memcpy(yuv_mat.ptr(i), yBuffer + i * yRowStride, width);
-            }
-
-            // 复制 UV 交错数据（NV21）
-            uint8_t* uvDst = yuv_mat.ptr(height);
-            for (int i = 0; i < height/2; i++) {
-                for (int j = 0; j < width/2; j++) {
-                    uvDst[i * width + 2 * j] = vBuffer[i * vRowStride + j * 2]; // V
-                    uvDst[i * width + 2 * j + 1] = uBuffer[i * uRowStride + j * 2]; // U
+                // 复制 Y 平面
+                for (int i = 0; i < height; i++) {
+                    memcpy(yuv_mat.ptr(i), yBuffer + i * yRowStride, width);
                 }
-            }
 
-            cv::cvtColor(yuv_mat, rgb_mat, cv::COLOR_YUV2RGB_NV12);
+                // 复制 UV 交错数据（NV21）
+                uint8_t* uvDst = yuv_mat.ptr(height);
+                for (int i = 0; i < height/2; i++) {
+                    for (int j = 0; j < width/2; j++) {
+                        uvDst[i * width + 2 * j] = vBuffer[i * vRowStride + j * 2]; // V
+                        uvDst[i * width + 2 * j + 1] = uBuffer[i * uRowStride + j * 2]; // U
+                    }
+                }
+
+                cv::cvtColor(yuv_mat, rgb_mat, cv::COLOR_YUV2RGB_NV12);
             } else {
-            // 处理 I420 格式
-            cv::Mat yuv_i420(height * 3/2, width, CV_8UC1);
+                // 处理 I420 格式
+                cv::Mat yuv_i420(height * 3/2, width, CV_8UC1);
 
-            // 复制 Y 平面
-            for (int i = 0; i < height; i++) {
-                memcpy(yuv_i420.ptr(i), yBuffer + i * yRowStride, width);
-            }
+                // 复制 Y 平面
+                for (int i = 0; i < height; i++) {
+                    memcpy(yuv_i420.ptr(i), yBuffer + i * yRowStride, width);
+                }
 
-            // 复制 U 和 V 平面
-            int uvHeight = height / 2;
-            int uvWidth = width / 2;
-            for (int i = 0; i < uvHeight; i++) {
-                memcpy(yuv_i420.ptr(height + i), uBuffer + i * uRowStride, uvWidth);
-                memcpy(yuv_i420.ptr(height + uvHeight + i), vBuffer + i * vRowStride, uvWidth);
-            }
+                // 复制 U 和 V 平面
+                int uvHeight = height / 2;
+                int uvWidth = width / 2;
+                for (int i = 0; i < uvHeight; i++) {
+                    memcpy(yuv_i420.ptr(height + i), uBuffer + i * uRowStride, uvWidth);
+                    memcpy(yuv_i420.ptr(height + uvHeight + i), vBuffer + i * vRowStride, uvWidth);
+                }
 
-            cv::cvtColor(yuv_i420, rgb_mat, cv::COLOR_YUV2RGB_I420);
+                cv::cvtColor(yuv_i420, rgb_mat, cv::COLOR_YUV2RGB_I420);
             }
 
 
@@ -155,6 +163,87 @@ void Camera::onImageAvailable(void* context, AImageReader* reader) {
 }
 };
 
+void Camera::onImageAvailable_GPU(void* context, AImageReader* reader) {
+    AImage* image = nullptr;
+    media_status_t mStatus = AImageReader_acquireNextImage(reader, &image);
+    if (mStatus != AMEDIA_OK || image == nullptr) {
+        return;
+    }
+    // int64_t image_timestamp;
+    // AImage_getTimestamp(image, &image_timestamp);
+
+    // cv::Mat rgb_mat;
+    {
+        std::lock_guard<std::mutex> lock(caminstance_->mtx_queue_);
+        if (caminstance_->AImage_queue_.size() >= 2) {
+            // AImage* old_image = caminstance_->AImage_queue_.front();
+            // caminstance_->AImage_queue_.pop();
+            AImage_delete(image);
+        } else {
+            caminstance_->AImage_queue_.push(image);
+        }
+        // caminstance_->AImage_queue_.push(image);
+    }
+    caminstance_->image_cv_.notify_one();
+
+
+    // Run processing in a separate thread to avoid blocking the callback
+    // std::thread processor([image](){ // Use 'this' to capture the class instance
+        
+    //     int64_t image_timestamp;
+    //     AImage_getTimestamp(image, &image_timestamp);
+
+    //     cv::Mat rgb_mat;
+        
+    //     // Use the GPU converter
+    //     if (caminstance_ -> yuvConverter_ && caminstance_ -> yuvConverter_->convert(image, rgb_mat)) {
+
+    //         caminstance_->setimg(rgb_mat);
+    //         if (caminstance_->posemerge_ != nullptr) {
+    //             caminstance_->posemerge_->putImg(rgb_mat, static_cast<double>(image_timestamp));
+    //         }
+    //     } 
+    //     AImage_delete(image);
+    // });
+    // processor.join();
+}
+
+void Camera::gpuLoop() {
+    auto yuvConverter = std::make_unique<YuvToRgbConverter>();
+    if (!yuvConverter->initialize(img_width, img_heigth)) {
+        LOGE("在工作者线程中初始化 YuvToRgbConverter 失败。");
+        return; // 初始化失败，线程直接退出
+    }
+    while (is_running_) {
+        AImage* image = nullptr;
+        {
+            std::unique_lock<std::mutex> lock(mtx_queue_);
+            image_cv_.wait(lock, [this] { return !AImage_queue_.empty() || !is_running_; });
+            if (!is_running_) break;
+            image = AImage_queue_.front();
+            AImage_queue_.pop();
+        }
+        if (image) {
+            int64_t image_timestamp;
+            AImage_getTimestamp(image, &image_timestamp);
+
+            cv::Mat rgb_mat;
+            
+            // Use the GPU converter
+            if (yuvConverter && yuvConverter->convert(image, rgb_mat)) {
+
+                setimg(rgb_mat);
+                if (posemerge_ != nullptr) {
+                    posemerge_->putImg(rgb_mat, static_cast<double>(image_timestamp));
+                }
+            } 
+            AImage_delete(image);
+        }
+    }
+    yuvConverter->release();
+    LOGI("工作者线程已清理GL资源。");
+}
+
 void Camera::setimg(const cv::Mat& callback_img) {
     std::unique_lock<std::mutex> lock(this->mtx_img);
     this->img = callback_img;
@@ -165,8 +254,6 @@ void Camera::getimg(cv::Mat& return_img) {
     return_img = this->img;
     // return this->img;
 }
-
-
 
 bool Camera::openCamera(const char* cameraId) {
         // 根据cameraID打开摄像头
@@ -224,7 +311,7 @@ bool Camera::createImageReader(int width, int height, int format, int maxImages)
 	//在这里注册AImage的回调，重中之重
     AImageReader_ImageListener imageListener {
             .context = nullptr,
-            .onImageAvailable = onImageAvailable
+            .onImageAvailable = onImageAvailable_GPU
     };
     status = AImageReader_setImageListener(imageReader, &imageListener);
     if (status != AMEDIA_OK) return false;
@@ -233,6 +320,7 @@ bool Camera::createImageReader(int width, int height, int format, int maxImages)
 };
 
 void Camera::startCamera() {
+
 // 开始使用摄像头预览
     cameraManager = ACameraManager_create();
     // 获取摄像头id
@@ -267,6 +355,9 @@ void Camera::startCamera() {
 
         }
     }
+    // 开启摄像头，并使用gpu将yuv转rgb
+    is_running_ = true;
+    gpu_thread_ =  std::thread(&Camera::gpuLoop, this);
 };
 
 void Camera::pauseCamera(){

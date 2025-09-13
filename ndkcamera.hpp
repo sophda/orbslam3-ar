@@ -2,9 +2,13 @@
 #define NDKCAMERA_H
 
 #include "PoseMerge.hpp"
+#include "glyuv2rgb.hpp"
+#include <atomic>
+#include <condition_variable>
 #include <cstddef>
 #include <future>
 #include <memory>
+#include <mutex>
 #include <opencv2/core/mat.hpp>
 #include <utility>
 #include <queue>
@@ -29,6 +33,13 @@ public:
     Camera(std::shared_ptr<PoseMerge> posemerge);
     
 private:
+    // std::unique_ptr<YuvToRgbConverter> yuvConverter_;
+    std::mutex mtx_queue_;
+    std::queue<AImage*> AImage_queue_;
+    std::atomic<bool> is_running_{false};
+    std::condition_variable image_cv_;
+    std::thread gpu_thread_;
+
     int img_heigth=720,img_width=1280;
     std::mutex mtx_img;
     std::shared_ptr<PoseMerge> posemerge_=nullptr;
@@ -52,6 +63,8 @@ private:
 
     static void onImageAvailable(void* context, AImageReader* reader); //回调函数
 
+    static void onImageAvailable_GPU(void* context, AImageReader* reader); //回调函数
+
     bool openCamera(const char* cameraId);
 
     bool createCaptureRequest(ACameraDevice_request_template templateId);
@@ -61,6 +74,8 @@ private:
     bool createImageReader(int width, int height, int format, int maxImages);
 
     void setimg(const cv::Mat& callback_img);
+
+    void gpuLoop();
 
 
 public:
